@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Account\AccountController;
 use App\Http\Controllers\account\ForgotPasswordController;
+use App\Http\Controllers\Admin\AdminSiderbarController;
+use App\Http\Controllers\admin\CustomerController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\FrontEnd\AccountController as FrontEndAccountController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\frontend\HomeController;
@@ -36,6 +39,36 @@ Route::prefix('admin')->middleware("admin")->group(function () {
     Route::post('/profile/update', [AccountController::class, 'updateProfile'])->name('updateProfile');
     Route::get('/change-password', [AccountController::class, 'editPassword'])->name('editPassword');
     Route::post('/update-password', [AccountController::class, 'updatePassword'])->name('updatePassword');
+
+    //Admin Sidebar
+    Route::prefix('admin-sidebar')->group(function () {
+        Route::get('/index', [AdminSiderbarController::class, 'index'])->name('admin-sidebar.index');
+        Route::get('/create', [AdminSiderbarController::class, 'create'])->name('admin-sidebar.create');
+        Route::post('/store', [AdminSiderbarController::class, 'store'])->name('admin-sidebar.store');
+        Route::get('/edit/{id}', [AdminSiderbarController::class, 'edit'])->name('admin-sidebar.edit');
+        Route::post('/update/{id}', [AdminSiderbarController::class, 'update'])->name('admin-sidebar.update');
+        Route::delete('/destroy/{id}', [AdminSiderbarController::class, 'destroy']);
+        Route::post('/change/{id}', [AdminSiderbarController::class, 'changeActive']);
+    });
+
+    //Admin User
+    Route::prefix('user')->group(function () {
+        Route::get('/index', [UserController::class, 'index'])->name('user.index');
+        Route::get('/create', [UserController::class, 'create'])->name('user.create');
+        Route::post('/store', [UserController::class, 'store'])->name('user.store');
+        Route::get('/show/{id}', [UserController::class, 'show'])->name("user.show");
+    });
+
+    //Admin Customer
+    Route::prefix('customer')->group(function () {
+        Route::get('/index', [CustomerController::class, 'index'])->name('customer.index');
+        Route::get('/create', [CustomerController::class, 'create'])->name('customer.create');
+        Route::post('/store', [CustomerController::class, 'store'])->name('customer.store');
+        Route::get('/edit/{id}', [CustomerController::class, 'edit'])->name('customer.edit');
+        Route::post('/update/{id}', [CustomerController::class, 'update'])->name('customer.update');
+        Route::post('/change/{id}', [CustomerController::class, 'changeStatus']);
+        Route::delete('/destroy/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
+    });
 });
 
 //Frontend
