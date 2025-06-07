@@ -19,11 +19,14 @@ class CustomerController extends Controller
     {
         $rules = [
             'name' => 'required|string|min:3|max:50',
-            'user_name' => 'required|string|min:3|max:30|unique:users,user_name,' . $id . ',id',
             'email' => 'required|email|max:100|unique:users,email,' . $id . ',id',
             'phone' => 'required|string|regex:/^0[0-9]{9}$/|unique:users,phone,' . $id . ',id',
-            'password' => $id ? 'nullable|min:6' : 'required|min:6',
         ];
+
+        if (!$id) {
+            $rules['user_name'] = 'required|string|min:3|max:30|unique:users,user_name';
+            $rules['password'] = 'required|min:6';
+        }
 
         $messages = [
             'name.required' => 'Họ tên không được để trống!',
@@ -94,10 +97,8 @@ class CustomerController extends Controller
 
         $userData = [
             "name" => $request->name,
-            "user_name" => $request->user_name,
             "email" => $request->email,
             "phone" => $request->phone,
-            "address" => $request->address,
             "avatar" => $request->avatar ? $request->avatar : "/storage/photos/1/Avatar/12225935.png",
             "role_id" => 2
         ];

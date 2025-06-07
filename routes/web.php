@@ -5,14 +5,20 @@ use App\Http\Controllers\account\ForgotPasswordController;
 use App\Http\Controllers\Admin\AdminSiderbarController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ColorController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\admin\CustomerController;
+use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\SizeController;
 use App\Http\Controllers\Admin\SlideController;
+use App\Http\Controllers\admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\FrontEnd\AccountController as FrontEndAccountController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\frontend\HomeController;
+use App\Http\Controllers\frontend\PostController as FrontendPostController;
 use Illuminate\Support\Facades\Route;
 use UniSharp\LaravelFilemanager\Lfm;
 
@@ -107,6 +113,30 @@ Route::prefix('admin')->middleware("admin")->group(function () {
         Route::post('/{id}/reply', [AdminContactController::class, 'reply'])->name('contact.reply');
     });
 
+    //Admin Tag
+    Route::prefix('tag')->group(function () {
+        Route::get('/index', [TagController::class, 'index'])->name('tag.index');
+        Route::get('/', [TagController::class, 'index']);
+        Route::get('/create', [TagController::class, 'create'])->name('tag.create');
+        Route::post('/store', [TagController::class, 'store'])->name('tag.store'); 
+        Route::get('/edit/{id}', [TagController::class, 'edit'])->name('tag.edit');
+        Route::post('/update/{id}', [TagController::class, 'update'])->name('tag.update');
+        Route::post('/change/{id}', [TagController::class, 'changeActive'])->name('tag.change');
+        Route::delete('/destroy/{id}', [TagController::class, 'destroy'])->name('tag.destroy');
+    });
+
+    //Admin Post
+    Route::prefix('post')->group(function () {
+        Route::get('/index', [PostController::class, 'index'])->name('admin-post.index');
+        Route::get('/', [PostController::class, 'index']);
+        Route::get('/create', [PostController::class, 'create'])->name('admin-post.create');
+        Route::post('/store', [PostController::class, 'store'])->name('admin-post.store'); 
+        Route::get('/edit/{id}', [PostController::class, 'edit'])->name('admin-post.edit');
+        Route::put('/update/{id}', [PostController::class, 'update'])->name('admin-post.update');
+        Route::post('/change/{id}', [PostController::class, 'changeStatus'])->name('admin-post.change');
+        Route::delete('/destroy/{id}', [PostController::class, 'destroy'])->name('admin-post.destroy');
+    });
+
     //Admin Brand
     Route::prefix('brand')->group(function () {
         Route::get('/index', [BrandController::class, 'index'])->name('brand.index');
@@ -119,7 +149,7 @@ Route::prefix('admin')->middleware("admin")->group(function () {
         Route::delete('/destroy/{id}', [BrandController::class, 'destroy'])->name('brand.destroy');
     });
 
-    //Admin Brand
+    //Admin Category
     Route::prefix('category')->group(function () {
         Route::get('/index', [CategoryController::class, 'index'])->name('category.index');
         Route::get('/', [CategoryController::class, 'index']);
@@ -130,12 +160,49 @@ Route::prefix('admin')->middleware("admin")->group(function () {
         Route::post('/change/{id}', [CategoryController::class, 'changeActive'])->name('category.change');
         Route::delete('/destroy/{id}', [CategoryController::class, 'destroy'])->name('category.destroy');
     });
+
+    //Admin Size
+    Route::prefix('size')->group(function () {
+        Route::get('/index', [SizeController::class, 'index'])->name('size.index');
+        Route::get('/', [SizeController::class, 'index']);
+        Route::get('/create', [SizeController::class, 'create'])->name('size.create');
+        Route::post('/store', [SizeController::class, 'store'])->name('size.store'); 
+        Route::get('/edit/{id}', [SizeController::class, 'edit'])->name('size.edit');
+        Route::post('/update/{id}', [SizeController::class, 'update'])->name('size.update');
+        Route::delete('/destroy/{id}', [SizeController::class, 'destroy'])->name('size.destroy');
+    });
+
+    //Admin Color
+    Route::prefix('color')->group(function () {
+        Route::get('/index', [ColorController::class, 'index'])->name('color.index');
+        Route::get('/', [ColorController::class, 'index']);
+        Route::get('/create', [ColorController::class, 'create'])->name('color.create');
+        Route::post('/store', [ColorController::class, 'store'])->name('color.store'); 
+        Route::get('/edit/{id}', [ColorController::class, 'edit'])->name('color.edit');
+        Route::post('/update/{id}', [ColorController::class, 'update'])->name('color.update');
+        Route::delete('/destroy/{id}', [ColorController::class, 'destroy'])->name('color.destroy');
+    });
+
+    //Admin Product
+    Route::prefix('product')->group(function () {
+        Route::get('/index', [ProductController::class, 'index'])->name('product.index');
+        Route::get('/', [ProductController::class, 'index']);
+        Route::get('/create', [ProductController::class, 'create'])->name('product.create');
+        Route::post('/store', [ProductController::class, 'store'])->name('product.store'); 
+        Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('product.edit');
+        Route::post('/update/{id}', [ProductController::class, 'update'])->name('product.update');
+        Route::delete('/destroy/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
+    });
 });
 
 //Frontend
 Route::get('/home', [HomeController::class, 'index'])->name('frontend.home.index');
 Route::get('/contact', [ContactController::class, 'index'])->name(name: 'frontend.contact.index');
 Route::post('/contact/send', [ContactController::class, 'sendContact'])->middleware('auth')->name('frontend.contact.send');
+
+//Frontend Post
+Route::get('/post', [FrontendPostController::class, 'index'])->name('frontend.post.index');
+Route::get('/posts/{id}', [FrontendPostController::class, 'show'])->name('frontend.posts.show');
 
 Route::prefix('account')->middleware("auth")->group(function () {
     Route::get('/profile', [FrontEndAccountController::class, 'profile'])->name('frontend.profile');

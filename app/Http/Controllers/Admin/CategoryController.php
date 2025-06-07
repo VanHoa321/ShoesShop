@@ -84,7 +84,7 @@ class CategoryController extends Controller
             $destroy->delete();
             return response()->json(['success' => true, 'message' => 'Xóa danh mục thành công']);
         } else {
-            return response()->json(['danger' => false, 'message' => 'danh mục này không tồn tại'], 404);
+            return response()->json(['danger' => false, 'message' => 'Danh mục này không tồn tại']);
         }
     }
     
@@ -96,7 +96,7 @@ class CategoryController extends Controller
             return response()->json(['success' => true, 'message' => 'Thay đổi trạng thái thành công']);
         }
         else {
-            return response()->json(['success' => false, 'message' => 'Thay đổi trạng thái không thành công'], 404);
+            return response()->json(['success' => false, 'message' => 'Thay đổi trạng thái không thành công']);
         }
     }
 }

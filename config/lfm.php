@@ -28,6 +28,8 @@ return [
 
     'allow_private_folder'     => true,
 
+    'allow_multi_select' => true,
+
     // Flexible way to customize client folders accessibility
     // If you want to customize client folders, publish tag="lfm_handler"
     // Then you can rewrite userField function in App\Handler\ConfigHandler class

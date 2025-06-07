@@ -82,7 +82,7 @@
                         @auth
                             <li class="nav-item"><a class="nav-link" href="{{ route('frontend.home.index') }}">Yêu thích</a></li>
                         @endauth
-                        <li class="nav-item"><a class="nav-link" href="{{ route("frontend.home.index") }}">Bài viết</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route("frontend.post.index") }}">Bài viết</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route("frontend.contact.index") }}">Liên hệ</a></li>
                     </ul>
                     @guest

@@ -26,14 +26,17 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="card card-primary">
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">Điền các trường dữ liệu</h3>                               
+                            </div>
                             <form method="post" action="{{route("category.update", $edit->id)}}" id="quickForm">
                                 @csrf
                                 <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-3 d-flex justify-content-center align-items-center">
+                                    <div class="col-md-4 d-flex justify-content-center align-items-center">
                                         <div class="form-group text-center mt-2">
-                                            <img id="holder" src="" style="width:200px; height:200px; object-fit:cover;" class="mx-auto d-block mb-4" />
+                                            <img id="holder" src="" style="width:280px; height:150px; object-fit:cover;" class="mx-auto d-block mb-4" />
                                             <span class="input-group-btn mr-2">
                                                 <a id="lfm" data-input="thumbnail" data-preview="holder" class="btn btn-info">
                                                     <i class="fa-solid fa-image"></i> Chọn ảnh bìa
@@ -42,7 +45,7 @@
                                             <input id="thumbnail" class="form-control" type="hidden" name="image" value="{{ old('image', $edit->image) }}">
                                         </div>
                                     </div>
-                                    <div class="col-md-9">
+                                    <div class="col-md-8">
                                         <div class="form-group">
                                             <label>Tên danh mục</label>
                                             <input type="text" name="name" value="{{ old('name', $edit->name) }}" class="form-control" placeholder="VD: Adidas, Nike, Puma..." required>

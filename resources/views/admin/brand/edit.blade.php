@@ -26,7 +26,10 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="card card-primary">
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">Điền các trường dữ liệu</h3>                               
+                            </div>
                             <form method="post" action="{{route("brand.update", $edit->id)}}" id="quickForm">
                                 @csrf
                                 <div class="card-body">
