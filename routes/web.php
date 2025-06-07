@@ -3,8 +3,13 @@
 use App\Http\Controllers\Account\AccountController;
 use App\Http\Controllers\account\ForgotPasswordController;
 use App\Http\Controllers\Admin\AdminSiderbarController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\admin\CustomerController;
+use App\Http\Controllers\Admin\SlideController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\FrontEnd\AccountController as FrontEndAccountController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\frontend\HomeController;
@@ -51,6 +56,17 @@ Route::prefix('admin')->middleware("admin")->group(function () {
         Route::post('/change/{id}', [AdminSiderbarController::class, 'changeActive']);
     });
 
+    //Slide
+    Route::prefix('slide')->group(function () {
+        Route::get('/index', [SlideController::class, 'index'])->name('slide.index');
+        Route::get('/create', [SlideController::class, 'create'])->name('slide.create');
+        Route::post('/store', [SlideController::class, 'store'])->name('slide.store');
+        Route::get('/edit/{id}', [SlideController::class, 'edit'])->name('slide.edit');
+        Route::post('/update/{id}', [SlideController::class, 'update'])->name('slide.update');
+        Route::delete('/destroy/{id}', [SlideController::class, 'destroy']);
+        Route::post('/change/{id}', [SlideController::class, 'changeActive']);
+    });
+
     //Admin User
     Route::prefix('user')->group(function () {
         Route::get('/index', [UserController::class, 'index'])->name('user.index');
@@ -68,6 +84,51 @@ Route::prefix('admin')->middleware("admin")->group(function () {
         Route::post('/update/{id}', [CustomerController::class, 'update'])->name('customer.update');
         Route::post('/change/{id}', [CustomerController::class, 'changeStatus']);
         Route::delete('/destroy/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
+    });
+
+    // Admin Voucher
+    Route::prefix('voucher')->group(function () {
+        Route::get('/index', [VoucherController::class, 'index'])->name('voucher.index');
+        Route::get('/create', [VoucherController::class, 'create'])->name('voucher.create');
+        Route::post('/store', [VoucherController::class, 'store'])->name('voucher.store');
+        Route::get('/edit/{id}', [VoucherController::class, 'edit'])->name('voucher.edit');
+        Route::post('/update/{id}', [VoucherController::class, 'update'])->name('voucher.update');
+        Route::post('/change/{id}', [VoucherController::class, 'changeStatus'])->name('voucher.changeStatus');
+        Route::delete('/destroy/{id}', [VoucherController::class, 'destroy'])->name('voucher.destroy');
+    });
+
+    //Admin Contact
+    Route::prefix('contact')->group(function () {
+        Route::get('/index', [AdminContactController::class, 'index'])->name('contact.index');
+        Route::get('/{id}', [AdminContactController::class, 'show'])->name('contact.show');
+        Route::delete('/{id}', [AdminContactController::class, 'destroy'])->name('contact.destroy');
+        Route::post('/mark-read/{id}', [AdminContactController::class, 'markAsRead'])->name('contact.mark-read');
+        Route::post('/mark-unread/{id}', [AdminContactController::class, 'markAsUnread'])->name('contact.mark-unread');
+        Route::post('/{id}/reply', [AdminContactController::class, 'reply'])->name('contact.reply');
+    });
+
+    //Admin Brand
+    Route::prefix('brand')->group(function () {
+        Route::get('/index', [BrandController::class, 'index'])->name('brand.index');
+        Route::get('/', [BrandController::class, 'index']);
+        Route::get('/create', [BrandController::class, 'create'])->name('brand.create');
+        Route::post('/store', [BrandController::class, 'store'])->name('brand.store'); 
+        Route::get('/edit/{id}', [BrandController::class, 'edit'])->name('brand.edit');
+        Route::post('/update/{id}', [BrandController::class, 'update'])->name('brand.update');
+        Route::post('/change/{id}', [BrandController::class, 'changeActive'])->name('brand.change');
+        Route::delete('/destroy/{id}', [BrandController::class, 'destroy'])->name('brand.destroy');
+    });
+
+    //Admin Brand
+    Route::prefix('category')->group(function () {
+        Route::get('/index', [CategoryController::class, 'index'])->name('category.index');
+        Route::get('/', [CategoryController::class, 'index']);
+        Route::get('/create', [CategoryController::class, 'create'])->name('category.create');
+        Route::post('/store', [CategoryController::class, 'store'])->name('category.store'); 
+        Route::get('/edit/{id}', [CategoryController::class, 'edit'])->name('category.edit');
+        Route::post('/update/{id}', [CategoryController::class, 'update'])->name('category.update');
+        Route::post('/change/{id}', [CategoryController::class, 'changeActive'])->name('category.change');
+        Route::delete('/destroy/{id}', [CategoryController::class, 'destroy'])->name('category.destroy');
     });
 });
 

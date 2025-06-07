@@ -117,7 +117,7 @@ class AccountController extends Controller
             'name' => $request->name,
             'user_name' => $request->user_name,
             'email' => $request->email,
-            "avatar" => $request->avatar ? $request->avatar : "/storage/files/1/Avatar/12225935.png",
+            "avatar" => $request->avatar ? $request->avatar : "/storage/photos/1/Avatar/12225935.png",
             "status" => 1,
             "role_id" => 2,
             "password" => $pw

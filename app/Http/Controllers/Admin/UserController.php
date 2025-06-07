@@ -70,7 +70,7 @@ class UserController extends Controller
             "email" => $request->email,
             "phone" => $request->phone,
             "address" => $request->address,
-            "avatar" => $request->avatar ? $request->avatar : "/storage/files/1/Avatar/12225935.png",
+            "avatar" => $request->avatar ? $request->avatar : "/storage/photos/1/Avatar/12225935.png",
             "password" => $request->password,
             "role_id" => 1
         ];

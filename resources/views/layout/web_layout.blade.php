@@ -84,6 +84,60 @@
             "extendedTimeOut": "1000"
         };
     </script>
+
+    <script>
+        $('#lfm').filemanager('image', {
+            prefix: '/files-manager'
+        });
+
+        $(document).ready(function () {
+            var lfm = function (options, cb) {
+                var route_prefix = (options && options.prefix) ? options.prefix : '/files-manager';
+                var type = options.type || 'image';
+                window.open(route_prefix + '?type=' + type, 'FileManager', 'width=700,height=400');
+                window.SetUrl = cb;
+            };
+
+            var LFMButton = function (context) {
+                var ui = $.summernote.ui;
+                var button = ui.button({
+                    contents: '<i class="note-icon-picture"></i>',
+                    tooltip: 'Insert image with filemanager',
+                    click: function () {
+                        lfm({
+                            type: 'image',
+                            prefix: '/files-manager'
+                        }, function (lfmItems, path) {
+                            lfmItems.forEach(function (lfmItem) {
+                                context.invoke('insertImage', lfmItem.url);
+                            });
+                        });
+                    }
+                });
+                return button.render();
+            };
+
+            var initialUrl = $('#thumbnail').val();
+            if (initialUrl) {
+                $('#holder').attr('src', initialUrl);
+            } else {
+                $('#holder').attr('src', '/storage/photos/1/Avatar/no-image.jpg');
+            }
+
+            $('#lfm').filemanager('image');
+
+            $('#lfm').on('click', function () {
+                var route_prefix = '/files-manager';
+                window.open(route_prefix + '?type=image', 'FileManager', 'width=700,height=400');
+                window.SetUrl = function (items) {
+                    var url = items[0].url;
+                    $('#holder').attr('src', url);
+                    $('#thumbnail').val(url);
+                    $('#thumbnail').trigger('change');
+                };
+            });
+        });
+    </script>
 </body>
 
 </html>

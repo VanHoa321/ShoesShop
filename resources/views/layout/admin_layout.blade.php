@@ -137,8 +137,8 @@
                         "previous": "Trước"
                     }
                 },
-                lengthMenu: [5, 10, 25, 50, 100],
-                pageLength: 5
+                lengthMenu: [10, 25, 50, 100],
+                pageLength: 10
             });
 
             $('#example-table-2').DataTable({
@@ -219,7 +219,7 @@
             if (initialUrl) {
                 $('#holder').attr('src', initialUrl);
             } else {
-                $('#holder').attr('src', '/storage/files/1/Avatar/no-image.jpg');
+                $('#holder').attr('src', '/storage/photos/1/Avatar/no-image.jpg');
             }
 
             $('#lfm').filemanager('image');

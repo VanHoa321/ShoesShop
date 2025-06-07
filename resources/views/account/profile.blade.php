@@ -96,3 +96,12 @@
         </section>
     </div>
 @endsection
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            setTimeout(function() {
+                $("#myAlert").fadeOut(500);
+            }, 3000);
+        })
+    </script>
+@endsection

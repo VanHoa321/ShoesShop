@@ -6,8 +6,8 @@
                 <div class="row mb-2">
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-left">
-                            <li class="breadcrumb-item"><a href="#" class="text-info">Quản lý hệ thống</a></li>
-                            <li class="breadcrumb-item active text-secondary">Admin Sidebar</li>
+                            <li class="breadcrumb-item"><a href="{{ route("voucher.index") }}" class="text-info">Voucher</a></li>
+                            <li class="breadcrumb-item active text-secondary">Danh sách Voucher</li>
                         </ol>
                     </div>
                 </div>
@@ -26,63 +26,71 @@
                 @endif
             @endif
         </section>
+
         <section class="content">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <div>
-                                    <a type="button" class="btn btn-success" href="{{ route('admin-sidebar.create') }}">
-                                        <i class="fa-solid fa-plus" title="Thêm mới Menu"></i>
-                                    </a>
-                                </div>
+                                <a type="button" class="btn btn-success" href="{{ route('voucher.create') }}">
+                                    <i class="fa-solid fa-plus" title="Thêm mới Voucher"></i>
+                                </a>
                             </div>
                             <div class="card-body">
                                 <table id="example-table" class="table table-bordered table-hover">
                                     <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Tên Menu</th>
-                                            <th>Cấp</th>
-                                            <th>Menu cha</th>
-                                            <th>Vị trí</th>
-                                            <th>Trạng thái</th>
-                                            <th>Chức năng</th>
-                                        </tr>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Mã Voucher</th>
+                                        <th>Loại áp dụng</th>
+                                        <th>Giá trị giảm</th>
+                                        <th>Ngày bắt đầu</th>
+                                        <th>Ngày kết thúc</th>
+                                        <th>Trạng thái</th>
+                                        <th>Chức năng</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                    @php
-                                        $counter = 1;
+                                    @php 
+                                        $counter = 1; 
                                     @endphp
-                                    @foreach ($items as $menu)
-                                        <tr id="menu-{{ $menu->id }}">
+                                    @foreach ($items as $item)
+                                        <tr id="voucher-{{ $item->id }}">
                                             <td>{{ $counter++ }}</td>
-                                            <td>{{ $menu->name }}</td>
-                                            <td>{{ $menu->level }}</t>        
-                                            @if ($menu->parent != 0)
-                                                <td>{{ $menu->parents->name }}</td>
-                                            @else
-                                                <td>Không</td>
-                                            @endif                                       
-                                            <td>{{ $menu->order }}</td>
+                                            <td>{{ $item->code }}</td>
+                                            <td>
+                                                @if ($item->type == 1)
+                                                    <span class="badge-primary p-1" style="font-size: 15px; width: 150px; display: inline-block; text-align: center;">Giảm theo giá tiền</span>                                          
+                                                @elseif ($item->type == 2)
+                                                    <span class="badge-info p-1" style="font-size: 15px; width: 150px; display: inline-block; text-align: center;">Giảm theo phần trăm</span>  
+                                                @endif
+                                            </td>
+                                            <td>
+                                                {{ number_format($item->discount_value, 0, ',', '.') }}
+                                                {{ $item->type == 1 ? 'đ' : '%' }}
+                                            </td>
+                                            <td>{{ \Carbon\Carbon::parse($item->start_date)->format('d/m/Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($item->end_date)->format('d/m/Y') }}</td>
                                             <td>
                                                 <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                                    <input type="checkbox" class="custom-control-input IsActive" id="customSwitch{{ $menu->id }}" {{ $menu->is_active ? 'checked' : '' }} value="{{ $menu->id }}">
-                                                    <label class="custom-control-label" for="customSwitch{{ $menu->id }}"></label>
+                                                    <input type="checkbox" class="custom-control-input IsActive" id="customSwitch{{ $item->id }}" {{ $item->status ? 'checked' : '' }} value="{{ $item->id }}">
+                                                    <label class="custom-control-label" for="customSwitch{{ $item->id }}"></label>
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href="{{route('admin-sidebar.edit', $menu->id)}}" class="btn btn-info btn-sm" title="Sửa Menu">
+                                                <a href="{{ route('voucher.edit', $item->id) }}"
+                                                   class="btn btn-info btn-sm" title="Sửa Voucher">
                                                     <i class="fa-solid fa-pen-to-square"></i>
                                                 </a>
-                                                <a href="#" class="btn btn-danger btn-sm btn-delete" data-id="{{ $menu->id }}" title="Xóa Menu">
+                                                <a href="#" class="btn btn-danger btn-sm btn-delete"
+                                                   data-id="{{ $item->id }}" title="Xóa Voucher">
                                                     <i class="fa-solid fa-trash"></i>
                                                 </a>
                                             </td>
                                         </tr>
                                     @endforeach
-                                    </tbody>                              
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -92,36 +100,36 @@
         </section>
     </div>
 @endsection
+
 @section('scripts')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
 
-            $('body').on('change', '.IsActive', function(e) {
+            $('body').on('change', '.IsActive', function (e) {
                 e.preventDefault();
-                var check = $(this);
-                const id = check.val();
+                const id = $(this).val();
                 $.ajax({
-                    url: "/admin/admin-sidebar/change/" + id,
+                    url: "/admin/voucher/change/" + id,
                     type: "POST",
                     data: {
                         _token: '{{ csrf_token() }}'
                     },
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             toastr.success(response.message);
                         }
                     },
-                    error: function(xhr) {
+                    error: function () {
                         toastr.error('Có lỗi xảy ra khi đổi trạng thái');
                     }
                 });
-            })
+            });
 
-            $('body').on('click', '.btn-delete', function(e) {
+            $('body').on('click', '.btn-delete', function (e) {
                 e.preventDefault();
                 const id = $(this).data('id');
                 Swal.fire({
-                    title: "Xác nhận xóa Menu?",
+                    title: "Xác nhận xóa Voucher?",
                     showCancelButton: true,
                     confirmButtonColor: "#3085d6",
                     cancelButtonColor: "#d33",
@@ -130,26 +138,26 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "/admin/admin-sidebar/destroy/" + id,
+                            url: "/admin/voucher/destroy/" + id,
                             type: "DELETE",
                             data: {
                                 _token: '{{ csrf_token() }}'
                             },
-                            success: function(response) {
+                            success: function (response) {
                                 toastr.success(response.message);
-                                $('#menu-' + id).remove();
+                                $('#voucher-' + id).remove();
                             },
-                            error: function(xhr) {
-                                toastr.error('Có lỗi khi xóa Menu');
+                            error: function () {
+                                toastr.error('Có lỗi khi xóa Voucher');
                             }
                         });
                     }
                 });
-            })
+            });
 
-            setTimeout(function() {
+            setTimeout(function () {
                 $("#myAlert").fadeOut(500);
             }, 3500);
-        })
+        });
     </script>
 @endsection

@@ -6,8 +6,8 @@
                 <div class="row mb-2">
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-left">
-                            <li class="breadcrumb-item"><a href="#" class="text-info">Quản lý hệ thống</a></li>
-                            <li class="breadcrumb-item active text-secondary">Admin Sidebar</li>
+                            <li class="breadcrumb-item"><a href="#" class="text-info">Quản lý danh mục</a></li>
+                            <li class="breadcrumb-item text-secondary">Danh sách danh mục</li>
                         </ol>
                     </div>
                 </div>
@@ -32,9 +32,9 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <div>
-                                    <a type="button" class="btn btn-success" href="{{ route('admin-sidebar.create') }}">
-                                        <i class="fa-solid fa-plus" title="Thêm mới Menu"></i>
+                                <div>   
+                                    <a type="button" class="btn btn-success" href="{{route('category.create')}}">
+                                        <i class="fa-solid fa-plus" title="Thêm mới danh mục"></i>
                                     </a>
                                 </div>
                             </div>
@@ -43,46 +43,38 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Tên Menu</th>
-                                            <th>Cấp</th>
-                                            <th>Menu cha</th>
-                                            <th>Vị trí</th>
+                                            <th>Ảnh</th>
+                                            <th>Tên danh mục</th>
                                             <th>Trạng thái</th>
                                             <th>Chức năng</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    @php
-                                        $counter = 1;
-                                    @endphp
-                                    @foreach ($items as $menu)
-                                        <tr id="menu-{{ $menu->id }}">
-                                            <td>{{ $counter++ }}</td>
-                                            <td>{{ $menu->name }}</td>
-                                            <td>{{ $menu->level }}</t>        
-                                            @if ($menu->parent != 0)
-                                                <td>{{ $menu->parents->name }}</td>
-                                            @else
-                                                <td>Không</td>
-                                            @endif                                       
-                                            <td>{{ $menu->order }}</td>
-                                            <td>
-                                                <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                                    <input type="checkbox" class="custom-control-input IsActive" id="customSwitch{{ $menu->id }}" {{ $menu->is_active ? 'checked' : '' }} value="{{ $menu->id }}">
-                                                    <label class="custom-control-label" for="customSwitch{{ $menu->id }}"></label>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <a href="{{route('admin-sidebar.edit', $menu->id)}}" class="btn btn-info btn-sm" title="Sửa Menu">
-                                                    <i class="fa-solid fa-pen-to-square"></i>
-                                                </a>
-                                                <a href="#" class="btn btn-danger btn-sm btn-delete" data-id="{{ $menu->id }}" title="Xóa Menu">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    </tbody>                              
+                                        @php
+                                            $counter = 1;
+                                        @endphp
+                                        @foreach ($items as $item)
+                                            <tr id="category-{{ $item->id }}">
+                                                <td>{{ $counter++ }}</td>
+                                                <td><img src="{{ $item->image }}" alt="category Image" style="width: auto; height: 50px; border-radius: 10%; object-fit: cover; margin-right: 10px;"></td>
+                                                <td>{{ $item->name }}</td>
+                                                <td>
+                                                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                                        <input type="checkbox" class="custom-control-input IsActive" id="customSwitch{{ $item->id }}" {{ $item->is_active ? 'checked' : '' }} value="{{ $item->id }}">
+                                                        <label class="custom-control-label" for="customSwitch{{ $item->id }}"></label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route("category.edit", $item->id) }}" class="btn btn-info btn-sm" title="Sửa thông tin danh mục">
+                                                        <i class="fa-solid fa-pen-to-square"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-danger btn-sm btn-delete" data-id="{{ $item->id }}" title="Xóa danh mục">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -101,7 +93,7 @@
                 var check = $(this);
                 const id = check.val();
                 $.ajax({
-                    url: "/admin/admin-sidebar/change/" + id,
+                    url: "/admin/category/change/" + id,
                     type: "POST",
                     data: {
                         _token: '{{ csrf_token() }}'
@@ -121,7 +113,7 @@
                 e.preventDefault();
                 const id = $(this).data('id');
                 Swal.fire({
-                    title: "Xác nhận xóa Menu?",
+                    title: "Xác nhận xóa danh mục này?",
                     showCancelButton: true,
                     confirmButtonColor: "#3085d6",
                     cancelButtonColor: "#d33",
@@ -130,17 +122,17 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "/admin/admin-sidebar/destroy/" + id,
+                            url: "/admin/category/destroy/" + id,
                             type: "DELETE",
                             data: {
                                 _token: '{{ csrf_token() }}'
                             },
                             success: function(response) {
                                 toastr.success(response.message);
-                                $('#menu-' + id).remove();
+                                $('#category-' + id).remove();
                             },
                             error: function(xhr) {
-                                toastr.error('Có lỗi khi xóa Menu');
+                                toastr.error('Có lỗi khi xóa danh mục');
                             }
                         });
                     }
