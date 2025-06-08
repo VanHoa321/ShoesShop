@@ -12,9 +12,12 @@ class Product extends Model
     protected $fillable = [
         'name',
         'code',
+        'group_code',
         'thumbnail',
         'brand_id',
+        'color_id',
         'price',
+        'discount',
         'summary',
         'description',
         'is_new',
@@ -32,19 +35,23 @@ class Product extends Model
         return $this->belongsTo(Brand::class, 'brand_id');
     }
 
+    public function color()
+    {
+        return $this->belongsTo(Color::class, 'color_id');
+    }
+
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'product_categories', 'product_id', 'category_id');
     }
 
-
-    public function variants()
+    public function images()
     {
-        return $this->hasMany(ProductVariant::class);
+        return $this->hasMany(ProductImage::class);
     }
 
-    public function colorImages()
+    public function sizes()
     {
-        return $this->hasMany(ProductColorImage::class);
+        return $this->hasMany(ProductSize::class);
     }
 }

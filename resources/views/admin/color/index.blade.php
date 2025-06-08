@@ -59,7 +59,7 @@
                                                 <td>{{ $item->name }}</td>
                                                 <td>{{ $item->code }}</td>
                                                 <td>
-                                                    <span class="d-inline-block rounded" style="background-color: {{ $item->code ? $item->code : "#FFFFFF" }}; width: 30px; height: 20px; border: 1px solid #ccc;"></span>
+                                                    <span class="d-inline-block rounded color-box" style="width: 30px; height: 20px; border: 1px solid #ccc;" data-color="{{ $item->code }}"></span>
                                                 </td>
                                                 <td>
                                                     <a href="{{ route('color.edit', $item->id) }}" class="btn btn-info btn-sm" title="Cập nhật màu sắc">
@@ -122,6 +122,10 @@
             setTimeout(function () {
                 $("#myAlert").fadeOut(500);
             }, 3500);
+        });
+
+        document.querySelectorAll('.color-box').forEach(function (el) {
+            el.style.backgroundColor = el.dataset.color;
         });
     </script>
 @endsection

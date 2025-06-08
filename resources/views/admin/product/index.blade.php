@@ -62,36 +62,38 @@
                                             <tr id="product-{{ $item->id }}">
                                                 <td>{{ $counter++ }}</td>
                                                 <td><img class="img-fluid img-circle" src="{{ $item->thumbnail }}" style="width: 80px; height: 80px"></td>
-                                                <td>{{ $item->name }}</td>
-                                                <td>{{ $item->code}}</td>
+                                                <td style="width:150px">{{ $item->name }}</td>
                                                 <td>{{ $item->brand->name }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y') }}</td>
-                                                <td class="status-column">
-                                                    @switch($item->status)
-                                                        @case(1)
-                                                            <span class="btn btn-sm btn-success" style="width:100px">Hoạt động</span>
-                                                            @break
-                                                        @case(0)
-                                                            <span class="btn btn-sm text-white btn-warning" style="width:100px">Bị khóa</span>
-                                                            @break
-                                                        @default
-                                                            Không xác định
-                                                    @endswitch
-                                                </td>    
+                                                <td>{{ number_format($item->price, 0, ',', '.') }} đ</td>
                                                 <td>
-                                                    <a href="{{ route("customer.edit", $item->id) }}" class="btn btn-info btn-sm" title="Sửa thông tin tài khoản">
+                                                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                                        <input type="checkbox" class="custom-control-input change-status" data-type="is_new" id="customSwitch1_{{ $item->id }}" {{ $item->is_new ? 'checked' : '' }} value="{{ $item->id }}">
+                                                        <label class="custom-control-label" for="customSwitch1_{{ $item->id }}"></label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                                        <input type="checkbox" class="custom-control-input change-status" data-type="is_sale" id="customSwitch2_{{ $item->id }}" {{ $item->is_sale ? 'checked' : '' }} value="{{ $item->id }}">
+                                                        <label class="custom-control-label" for="customSwitch2_{{ $item->id }}"></label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                                        <input type="checkbox" class="custom-control-input change-status" data-type="is_bestseller" id="customSwitch3_{{ $item->id }}" {{ $item->is_bestseller ? 'checked' : '' }} value="{{ $item->id }}">
+                                                        <label class="custom-control-label" for="customSwitch3_{{ $item->id }}"></label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                                        <input type="checkbox" class="custom-control-input change-status" data-type="status" id="customSwitch4_{{ $item->id }}" {{ $item->status ? 'checked' : '' }} value="{{ $item->id }}">
+                                                        <label class="custom-control-label" for="customSwitch4_{{ $item->id }}"></label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route("product.edit", $item->id) }}" class="btn btn-info btn-sm" title="Cập nhật sản phẩm">
                                                         <i class="fa-solid fa-pen-to-square"></i>
                                                     </a>
-                                                    @if ($item->status)
-                                                        <a class="btn btn-warning btn-sm text-white btn-lock-acc" data-id="{{ $item->id }}" title="Khóa tài khoản người dùng">
-                                                            <i class="fa-solid fa-lock"></i>
-                                                        </a>
-                                                    @else
-                                                        <a class="btn btn-success btn-sm btn-unlock-acc" data-id="{{ $item->id }}" title="Mở khóa tài khoản">
-                                                            <i class="fa-solid fa-lock-open"></i>
-                                                        </a>
-                                                    @endif
-                                                    <a href="#" class="btn btn-danger btn-sm btn-delete" data-id="{{ $item->id }}" title="Xóa khách hàng">
+                                                    <a href="#" class="btn btn-danger btn-sm btn-delete" data-id="{{ $item->id }}" title="Xóa sản phẩm">
                                                         <i class="fa-solid fa-trash"></i>
                                                     </a>
                                                 </td>
@@ -111,32 +113,38 @@
     <script>
         $(document).ready(function() {
 
-            $('body').on('change', '.IsActive', function(e) {
+            $('body').on('change', '.change-status', function(e) {
                 e.preventDefault();
-                var check = $(this);
-                const id = check.val();
+
+                let checkbox = $(this);
+                let id = checkbox.val();
+                let type = checkbox.data('type');
+
                 $.ajax({
-                    url: "/admin/customer/change/" + id,
+                    url: "/admin/product/change-status/" + id,
                     type: "POST",
                     data: {
-                        _token: '{{ csrf_token() }}'
+                        _token: '{{ csrf_token() }}',
+                        type: type
                     },
                     success: function(response) {
                         if (response.success) {
                             toastr.success(response.message);
+                        } else {
+                            toastr.error(response.message);
                         }
                     },
                     error: function(xhr) {
                         toastr.error('Có lỗi xảy ra khi đổi trạng thái');
                     }
                 });
-            })
+            });
 
             $('body').on('click', '.btn-delete', function(e) {
                 e.preventDefault();
                 const id = $(this).data('id');
                 Swal.fire({
-                    title: "Xác nhận xóa khách hàng?",
+                    title: "Xác nhận xóa sản phẩm?",
                     showCancelButton: true,
                     confirmButtonColor: "#3085d6",
                     cancelButtonColor: "#d33",
@@ -145,7 +153,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "/admin/customer/destroy/" + id,
+                            url: "/admin/product/destroy/" + id,
                             type: "DELETE",
                             data: {
                                 _token: '{{ csrf_token() }}'
@@ -153,7 +161,7 @@
                             success: function(response) {
                                 if (response.success) {
                                     toastr.success(response.message);
-                                     $('#customer-' + id).remove();
+                                     $('#product-' + id).remove();
                                 } else {
                                     toastr.error(response.message);
                                 }

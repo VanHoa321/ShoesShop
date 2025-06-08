@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="{{asset("assets/plugins/dropzone/min/dropzone.min.css")}}">
     <link href="{{asset("assets/plugins/toastr/toastr.min.css")}}" rel="stylesheet" />
     <link href="{{asset("assets/plugins/toastr/toastr.css")}}" rel="stylesheet" />
+    @yield('styles')
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
     <div class="wrapper">

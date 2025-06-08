@@ -8,9 +8,12 @@ use App\Models\Category;
 use App\Models\Color;
 use App\Models\Product;
 use App\Models\ProductColorImage;
+use App\Models\ProductImage;
+use App\Models\ProductSize;
 use App\Models\ProductVariant;
 use App\Models\Size;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -22,22 +25,13 @@ class ProductController extends Controller
         return view("admin.product.index", compact("items")); 
     }
 
-    public function create()
-    {
-        $brands = Brand::where('is_active', 1)->get();
-        $categories = Category::where('is_active', 1)->get();
-        $colors = Color::all();
-        $sizes = Size::all();
-        return view('admin.product.create', compact('brands', 'categories', 'colors', 'sizes'));
-    }
-
     private function validates(Request $request, $id = null)
     {
         $rules = [
             'name' => 'required|string|max:255|unique:products,name,' . $id . ',id',
             'code' => 'required|string|max:50|unique:products,code,' . $id . ',id',
             'thumbnail' => 'required|string',
-            'branch_id' => 'required|exists:brands,id',
+            'brand_id' => 'required|exists:brands,id',
             'price' => 'required|numeric|min:0',
             'summary' => 'required|string|min:10',
             'is_new' => 'boolean',
@@ -45,12 +39,28 @@ class ProductController extends Controller
             'is_bestseller' => 'boolean',
             'categories' => 'required|array',
             'categories.*' => 'exists:categories,id',
-            'selected_color_ids' => 'required|string',
-            'variants' => 'required|array',
-            'variants.*.*.quantity' => 'required_if:variants.*.*.selected,1|numeric|min:0',
-            'variants.*.*.price' => 'required_if:variants.*.*.selected,1|numeric|min:0',
-            'variants.*.*.discount' => 'nullable|numeric|min:0|max:100',
-            'color_images.*' => 'nullable|string',
+            'color_id' => 'required|exists:colors,id',
+            'sizes' => 'required|array',
+            'sizes.*.selected' => 'required|boolean',
+            'sizes.*.quantity' => [
+                'nullable',
+                function ($attribute, $value, $fail) use ($request) {
+                    $index = explode('.', $attribute)[1];
+                    $selected = $request->input("sizes.{$index}.selected");
+                    $quantity = $value;
+
+                    if ($selected == 1 || (!is_null($quantity) && $quantity > 0)) {
+                        if (is_null($quantity)) {
+                            $fail('Số lượng không được để trống khi kích thước được chọn hoặc có số lượng lớn hơn 0!');
+                        } elseif (!is_numeric($quantity)) {
+                            $fail('Số lượng phải là số!');
+                        } elseif ($quantity < 0) {
+                            $fail('Số lượng phải lớn hơn hoặc bằng 0!');
+                        }
+                    }
+                },
+            ],
+            'color_images' => 'nullable|string',
         ];
 
         $messages = [
@@ -61,8 +71,8 @@ class ProductController extends Controller
             'code.unique' => 'Mã sản phẩm đã tồn tại!',
             'code.max' => 'Mã sản phẩm không quá 50 ký tự!',
             'thumbnail.required' => 'Ảnh đại diện không được để trống!',
-            'branch_id.required' => 'Vui lòng chọn thương hiệu!',
-            'branch_id.exists' => 'Thương hiệu không tồn tại!',
+            'brand_id.required' => 'Vui lòng chọn thương hiệu!',
+            'brand_id.exists' => 'Thương hiệu không tồn tại!',
             'price.required' => 'Giá bán không được để trống!',
             'price.numeric' => 'Giá bán phải là số!',
             'price.min' => 'Giá bán phải lớn hơn hoặc bằng 0!',
@@ -70,20 +80,23 @@ class ProductController extends Controller
             'summary.min' => 'Mô tả ngắn phải có ít nhất 10 ký tự!',
             'categories.required' => 'Vui lòng chọn ít nhất một danh mục!',
             'categories.*.exists' => 'Danh mục không tồn tại!',
-            'selected_color_ids.required' => 'Vui lòng chọn ít nhất một màu sắc!',
-            'variants.required' => 'Vui lòng chọn ít nhất một biến thể!',
-            'variants.*.*.quantity.required_if' => 'Số lượng không được để trống khi chọn size!',
-            'variants.*.*.quantity.numeric' => 'Số lượng phải là số!',
-            'variants.*.*.quantity.min' => 'Số lượng phải lớn hơn hoặc bằng 0!',
-            'variants.*.*.price.required_if' => 'Giá bán không được để trống khi chọn size!',
-            'variants.*.*.price.numeric' => 'Giá bán phải là số!',
-            'variants.*.*.price.min' => 'Giá bán phải lớn hơn hoặc bằng 0!',
-            'variants.*.*.discount.numeric' => 'Giảm giá phải là số!',
-            'variants.*.*.discount.min' => 'Giảm giá phải từ 0!',
-            'variants.*.*.discount.max' => 'Giảm giá không được vượt quá 100!',
+            'color_id.required' => 'Vui lòng chọn một màu sắc!',
+            'color_id.exists' => 'Màu sắc không tồn tại!',
+            'sizes.required' => 'Vui lòng chọn ít nhất một size!',
+            'sizes.*.selected.required' => 'Trạng thái chọn size không được để trống!',
+            'color_images.string' => 'Ảnh màu sắc phải là chuỗi hợp lệ!',
         ];
 
         return Validator::make($request->all(), $rules, $messages);
+    }
+
+    public function create()
+    {
+        $brands = Brand::where('is_active', 1)->get();
+        $categories = Category::where('is_active', 1)->get();
+        $colors = Color::all();
+        $sizes = Size::all();
+        return view('admin.product.create', compact('brands', 'categories', 'colors', 'sizes'));
     }
 
     public function store(Request $request)
@@ -94,57 +107,223 @@ class ProductController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // Tạo sản phẩm
-        $product = Product::create([
-            'name' => $request->name,
-            'code' => $request->code,
-            'thumbnail' => $request->thumbnail,
-            'branch_id' => $request->branch_id,
-            'price' => $request->price,
-            'summary' => $request->summary,
-            'description' => $request->description,
-            'is_new' => $request->has('is_new') ? true : false,
-            'is_sale' => $request->has('is_sale') ? true : false,
-            'is_bestseller' => $request->has('is_bestseller') ? true : false,
-            'status' => 1,
-        ]);
+        try {
+            DB::beginTransaction();
 
-        // Gắn danh mục
-        $product->categories()->sync($request->categories);
+            // Create new product
+            $product = Product::create([
+                'name' => $request->name,
+                'code' => $request->code,
+                'group_code' => $request->group_code,
+                'thumbnail' => $request->thumbnail,
+                'brand_id' => $request->brand_id,
+                'color_id' => $request->color_id,
+                'price' => $request->price,
+                'discount' => $request->discount ?? 0,
+                'summary' => $request->summary,
+                'description' => $request->description,
+                'is_new' => $request->input('is_new', 0),
+                'is_sale' => $request->input('is_sale', 0),
+                'is_bestseller' => $request->input('is_bestseller', 0),
+                'status' => 1,
+            ]);
 
-        // Lưu biến thể
-        foreach ($request->variants as $colorId => $sizes) {
-            foreach ($sizes as $sizeId => $variant) {
-                ProductVariant::create([
-                    'product_id' => $product->id,
-                    'color_id' => $colorId,
-                    'size_id' => $sizeId,
-                    'quantity' => $variant['quantity'],
-                    'price' => $variant['price'],
-                    'discount' => $variant['discount'] ?? 0,
-                ]);
+            // Attach categories
+            if ($request->has('categories')) {
+                $product->categories()->attach($request->categories);
             }
-        }
 
-        // Lưu ảnh màu sắc
-        if ($request->has('color_images')) {
-            foreach ($request->color_images as $colorId => $imagePaths) {
-                if (!empty($imagePaths)) {
-                    $paths = explode(',', $imagePaths);
-                    foreach ($paths as $path) {
-                        ProductColorImage::create([
+            // Save product images
+            if ($request->has('color_images') && !empty($request->color_images)) {
+                $imagePaths = explode(',', $request->color_images);
+                foreach ($imagePaths as $imagePath) {
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image' => trim($imagePath),
+                    ]);
+                }
+            }
+
+            // Save product sizes
+            if ($request->has('sizes')) {
+                foreach ($request->sizes as $sizeId => $sizeData) {
+                    if (isset($sizeData['selected']) && $sizeData['selected'] == 1) {
+                        ProductSize::create([
                             'product_id' => $product->id,
-                            'color_id' => $colorId,
-                            'image' => trim($path),
+                            'size_id' => $sizeId,
+                            'quantity' => $sizeData['quantity'] ?? 0,
                         ]);
                     }
                 }
             }
+
+            DB::commit();
+
+            return redirect()->route('product.index')->with('messenge', [
+                'style' => 'success',
+                'msg' => 'Sản phẩm đã được thêm thành công!',
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('messenge', [
+                'style' => 'danger',
+                'msg' => 'Có lỗi xảy ra khi thêm sản phẩm: ' . $e->getMessage(),
+            ])->withInput();
+        }
+    }
+
+    public function edit($id)
+    {
+        $product = Product::with(['categories', 'images', 'sizes'])->findOrFail($id);
+        $brands = Brand::where('is_active', 1)->get();
+        $categories = Category::where('is_active', 1)->get();
+        $colors = Color::all();
+        $sizes = Size::all();
+
+        $selectedSizes = ProductSize::where('product_id', $product->id)->pluck('quantity', 'size_id')->toArray();
+        $colorImages = $product->images->pluck('image')->implode(',');
+
+        return view('admin.product.edit', compact('product', 'brands', 'categories', 'colors', 'sizes', 'selectedSizes', 'colorImages'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validator = $this->validates($request, $id);
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
         }
 
-        return redirect()->route('product.index')->with('messenge', [
-            'style' => 'success',
-            'msg' => 'Sản phẩm đã được thêm thành công!',
-        ]);
+        try {
+            DB::beginTransaction();
+
+            $product = Product::findOrFail($id);
+            $product->update([
+                'name' => $request->name,
+                'code' => $request->code,
+                'group_code' => $request->group_code,
+                'thumbnail' => $request->thumbnail,
+                'brand_id' => $request->brand_id,
+                'color_id' => $request->color_id,
+                'price' => $request->price,
+                'discount' => $request->discount ?? 0,
+                'summary' => $request->summary,
+                'description' => $request->description,
+                'is_new' => $request->input('is_new', 0),
+                'is_sale' => $request->input('is_sale', 0),
+                'is_bestseller' => $request->input('is_bestseller', 0),
+                'status' => $product->status,
+            ]);
+
+            $product->categories()->sync($request->categories);
+
+            if ($request->has('color_images') && !empty($request->color_images)) {
+                $newImagePaths = explode(',', $request->color_images);
+                $existingImagePaths = $product->images->pluck('image')->toArray();
+
+                // Delete images not in the new list
+                ProductImage::where('product_id', $product->id)
+                ->whereNotIn('image', $newImagePaths)
+                ->delete();
+
+                // Add new images
+                foreach ($newImagePaths as $imagePath) {
+                    if (!in_array($imagePath, $existingImagePaths)) {
+                        ProductImage::create([
+                            'product_id' => $product->id,
+                            'image' => trim($imagePath),
+                        ]);
+                    }
+                }
+            } else {
+                // If no images provided, delete all existing images
+                ProductImage::where('product_id', $product->id)->delete();
+            }
+
+            // Update sizes
+            if ($request->has('sizes')) {
+                // Delete existing sizes
+                ProductSize::where('product_id', $product->id)->delete();
+
+                // Add new sizes
+                foreach ($request->sizes as $sizeId => $sizeData) {
+                    if ((isset($sizeData['selected']) && $sizeData['selected'] == 1) || 
+                        (isset($sizeData['quantity']) && $sizeData['quantity'] > 0)) {
+                        ProductSize::create([
+                            'product_id' => $product->id,
+                            'size_id' => $sizeId,
+                            'quantity' => $sizeData['quantity'] ?? 0,
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('product.index')->with('messenge', [
+                'style' => 'success',
+                'msg' => 'Sản phẩm đã được cập nhật thành công!',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('messenge', [
+                'style' => 'danger',
+                'msg' => 'Có lỗi xảy ra khi cập nhật sản phẩm: ' . $e->getMessage(),
+            ])->withInput();
+        }
+    }
+
+    public function changeStatus(Request $request, $id)
+    {
+        $item = Product::find($id);
+
+        if (!$item) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy bản ghi'], 404);
+        }
+
+        $type = $request->input('type');
+
+        switch ($type) {
+            case 'is_new':
+                $item->is_new = !$item->is_new;
+                break;
+            case 'is_sale':
+                $item->is_sale = !$item->is_sale;
+                break;
+            case 'is_bestseller':
+                $item->is_bestseller = !$item->is_bestseller;
+                break;
+            case 'status':
+                $item->status = $item->status == 1 ? 0 : 1;
+                break;
+            default:
+                return response()->json(['success' => false, 'message' => 'Loại trạng thái không hợp lệ'], 400);
+        }
+
+        $item->save();
+
+        return response()->json(['success' => true, 'message' => 'Thay đổi trạng thái thành công']);
+    }
+
+    public function destroy($id)
+    {
+        $item = Product::find($id);
+
+        if (!$item) {
+            return redirect()->route('product.index')->with('messenge', [
+                'style' => 'danger',
+                'msg' => 'Không tìm thấy sản phẩm!',
+            ]);
+        }
+
+        $item->sizes()->delete();
+
+        $item->images()->delete();
+
+        $item->categories()->detach();
+
+        $item->delete();
+
+        return response()->json(['success' => true, 'message' => 'Xoá sản phẩm thành công']);
     }
 }

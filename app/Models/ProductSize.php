@@ -5,32 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductVariant extends Model
+class ProductSize extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'product_id',
-        'color_id',
         'size_id',
         'quantity',
-        'price',
-        'discount',
     ];
 
-    protected $table = 'product_variants';
+    protected $table = 'product_sizes';
     
     protected $primaryKey = 'id';
 
     public $timestamps = false;
 
-    public function color()
-    {
-        return $this->belongsTo(Color::class, 'color_id');
-    }
-
     public function size()
     {
-        return $this->belongsTo(Size::class, 'size_id');
+        return $this->belongsTo(Size::class);
     }
 }

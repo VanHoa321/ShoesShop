@@ -7,7 +7,7 @@
                     <div class="col-sm-6">         
                         <ol class="breadcrumb float-sm-left">
                             <li class="breadcrumb-item"><a href="{{ route('product.create') }}" class="text-info">Quản lý sản phẩm</a></li>
-                            <li class="breadcrumb-item active">Thêm mới sản phẩm</li>
+                            <li class="breadcrumb-item active">Cập nhật sản phẩm</li>
                         </ol>               
                     </div>
                 </div>
@@ -31,19 +31,19 @@
                             <div class="card-header">
                                 <h3 class="card-title">Điền các trường dữ liệu</h3>                               
                             </div>
-                            <form method="post" action="{{route("product.store")}}" id="quickForm">
+                            <form method="post" action="{{route("product.update" , $product->id)}}" id="quickForm">
                                 @csrf
                                 <div class="card-body">                           
                                     <div class="row">
                                         <div class="col-md-3 d-flex justify-content-center align-items-center">
                                             <div class="form-group text-center mt-2">
-                                                <img id="holder" src="{{ old('thumbnail') ?: '' }}" style="width:230px; height:230px; object-fit:cover;" class="mx-auto d-block mb-4" />
+                                                <img id="holder" src="{{ old('thumbnail', $product->thumbnail)}}" style="width:230px; height:230px; object-fit:cover;" class="mx-auto d-block mb-4" />
                                                 <span class="input-group-btn mr-2">
                                                     <a id="lfm" data-input="thumbnail" data-preview="holder" class="btn btn-info">
                                                         <i class="fa-solid fa-image"></i> Chọn ảnh đại diện
                                                     </a>
                                                 </span>
-                                                <input id="thumbnail" class="form-control" type="hidden" name="thumbnail" value="{{ old('thumbnail') }}">                                                                             
+                                                <input id="thumbnail" class="form-control" type="hidden" name="thumbnail" value="{{ old('thumbnail', $product->thumbnail) }}">                                                                             
                                             </div>
                                         </div>
                                         <div class="col-md-9">
@@ -51,13 +51,13 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label>Tên sản phẩm</label>
-                                                        <input type="text" name="name" class="form-control" placeholder="VD: Giày Thể Thao Helio Teen Nam Màu Trắng" value="{{old('name')}}">
+                                                        <input type="text" name="name" class="form-control" placeholder="VD: Giày Thể Thao Helio Teen Nam Màu Trắng" value="{{old('name', $product->name)}}">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label>Mã sản phẩm</label>
-                                                        <input type="text" name="code" class="form-control" placeholder="VD: BSB008100TRG" value="{{old('code')}}">
+                                                        <input type="text" name="code" class="form-control" placeholder="VD: BSB008100TRG" value="{{old('code', $product->code)}}">
                                                     </div>
                                                 </div>
                                             </div>                                                                         
@@ -67,7 +67,7 @@
                                                         <label>Thương hiệu</label>
                                                         <select name="brand_id" class="form-control select2bs4" style="width: 100%">
                                                             @foreach($brands as $item)
-                                                                <option value="{{$item->id}}" {{ old('branch_id') == $item->id ? 'selected' : '' }}>{{$item->name}}</option>
+                                                                <option value="{{ $item->id }}" {{ old('brand_id', $product->brand_id) == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -75,13 +75,13 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label>Giá bán</label>
-                                                        <input type="number" name="price" class="form-control" placeholder="VD: 100000" value="{{old('price')}}">
+                                                        <input type="number" name="price" class="form-control" placeholder="VD: 100000" value="{{ old('price', $product->price) }}">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label>Giảm giá</label>
-                                                        <input type="number" name="discount" class="form-control" placeholder="VD: 10000" value="{{old('discount')}}">
+                                                        <input type="number" name="discount" class="form-control" placeholder="VD: 10000" value="{{old('discount', $product->discount)}}">
                                                         <em class="text-muted">Nếu không giảm giá, để trống hoặc nhập 0</em>
                                                     </div>
                                                 </div>
@@ -92,7 +92,7 @@
                                                         <label>Màu sắc</label>
                                                         <select name="color_id" class="form-control color-select2" style="width: 100%">
                                                             @foreach($colors as $color)
-                                                                <option value="{{ $color->id }}" data-color-code="{{ $color->code }}" {{ old('color_id') == $color->id ? 'selected' : '' }}>
+                                                                <option value="{{ $color->id }}" data-color-code="{{ $color->code }}" {{ old('color_id', $product->color_id) == $color->id ? 'selected' : '' }}>
                                                                     {{ $color->name }}
                                                                 </option>
                                                             @endforeach
@@ -102,7 +102,7 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label>Mã nhóm sản phẩm</label>
-                                                        <input type="text" name="group_code" class="form-control" placeholder="VD: SP001" value="{{old('group_code')}}">
+                                                        <input type="text" name="group_code" class="form-control" placeholder="VD: SP001" value="{{ old('group_code', $product->group_code) }}">
                                                     </div>
                                                 </div>
                                             </div>
@@ -112,7 +112,7 @@
                                                         <label>Danh mục sản phẩm</label>
                                                         <select name="categories[]" class="form-control custom-select2" multiple>
                                                             @foreach($categories as $category)
-                                                                <option value="{{ $category->id }}" data-name="{{ $category->name }}" {{ in_array($category->id, old('categories', [])) ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                                <option value="{{ $category->id }}" data-name="{{ $category->name }}" {{ in_array($category->id, old('categories', $product->categories->pluck('id')->toArray())) ? 'selected' : '' }}>{{ $category->name }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -120,15 +120,15 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group d-flex justify-content-between align-items-center" style="margin-top: 34px;">
                                                         <div class="icheck-success" style="width: 33%;">
-                                                            <input type="checkbox" name="is_new" id="checkboxSuccess1" value="1" {{ old('is_new') ? 'checked' : '' }}>
+                                                            <input type="checkbox" name="is_new" id="checkboxSuccess1" value="1" {{ old('is_new', $product->is_new) ? 'checked' : '' }}>
                                                             <label for="checkboxSuccess1">Mới</label>
                                                         </div>
                                                         <div class="icheck-success" style="width: 40%;">
-                                                            <input type="checkbox" name="is_sale" id="checkboxSuccess2" value="1" {{ old('is_sale') ? 'checked' : '' }}>
+                                                            <input type="checkbox" name="is_sale" id="checkboxSuccess2" value="1" {{ old('is_sale', $product->is_sale) ? 'checked' : '' }}>
                                                             <label for="checkboxSuccess2">Giảm giá</label>
                                                         </div>
                                                         <div class="icheck-success" style="width: 33%;">
-                                                            <input type="checkbox" name="is_bestseller" id="checkboxSuccess3" value="1" {{ old('is_bestseller') ? 'checked' : '' }}>
+                                                            <input type="checkbox" name="is_bestseller" id="checkboxSuccess3" value="1" {{ old('is_bestseller', $product->is_bestseller) ? 'checked' : '' }}>
                                                             <label for="checkboxSuccess3">Nổi bật</label>
                                                         </div>
                                                     </div>
@@ -136,19 +136,19 @@
                                             </div>                                 
                                             <div class="form-group">
                                                 <label>Mô tả ngắn</label>
-                                                <textarea class="form-control mb-1" name="summary" placeholder="VD: Mang tinh thần tối giản nhưng vẫn nổi bật, mẫu giày sneaker Helio BSG007400 màu kem phối nâu là lựa chọn lý tưởng cho các bạn tuổi teen yêu thích phong cách thanh lịch, hiện đại và dễ phối đồ." style="height: 100px">{{ old('summary') }}</textarea>
-                                            </div>                                        
+                                                <textarea class="form-control mb-1" name="summary" placeholder="VD: Mang tinh thần tối giản nhưng vẫn nổi bật..." style="height: 100px">{{ old('summary', $product->summary) }}</textarea>
+                                            </div>                                       
                                         </div>
                                     </div>
-                                    <div class="row">
+                                            <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label class="mb-2">Chọn size giày</label>
                                                 <div class="row" id="sizeInputsContainer">
                                                     @foreach($sizes as $size)
                                                         @php
-                                                            $oldSizeData = old('sizes.' . $size->id);
-                                                            $isSizeSelected = $oldSizeData && ($oldSizeData['selected'] ?? '0') == '1';
+                                                            $isSizeSelected = isset($selectedSizes[$size->id]);
+                                                            $quantity = $isSizeSelected ? $selectedSizes[$size->id] : '';
                                                         @endphp
                                                         <div class="col-md-3 col-sm-6 mb-3">
                                                             <div class="card">
@@ -165,7 +165,7 @@
                                                                         <input type="number" name="sizes[{{ $size->id }}][quantity]" 
                                                                             class="form-control" 
                                                                             placeholder="VD: 100" 
-                                                                            value="{{ $oldSizeData['quantity'] ?? '' }}">
+                                                                            value="{{ old('sizes.' . $size->id . '.quantity', $quantity) }}">
                                                                     </div>
                                                                     <input type="hidden" name="sizes[{{ $size->id }}][selected]" value="{{ $isSizeSelected ? '1' : '0' }}" class="size-selected-input">
                                                                 </div>
@@ -193,9 +193,9 @@
                                             <div id="color-images-holder" 
                                                 class="d-flex flex-wrap justify-content-center align-items-center" 
                                                 style="width: 100%; height: 100%;">
-                                                @if(old('color_images'))
+                                                @if(old('color_images', $colorImages))
                                                     @php
-                                                        $oldColorImagePaths = explode(',', old('color_images'));
+                                                        $oldColorImagePaths = explode(',', old('color_images', $colorImages));
                                                     @endphp
                                                     @foreach($oldColorImagePaths as $path)
                                                         <div class="uploaded-image-item" style="position: relative; margin: 5px; border: 1px solid #ddd;">
@@ -209,13 +209,13 @@
                                                 @endif
                                             </div>
 
-                                            <input id="color_images_input" class="form-control" type="hidden" name="color_images" value="{{ old('color_images') }}">
+                                            <input id="color_images_input" class="form-control" type="hidden" name="color_images" value="{{ old('color_images', $colorImages) }}">
                                         </div>
                                     </div>
 
                                     <div class="form-group">
                                         <label>Nội dung</label>
-                                        <textarea id="summernote" class="form-control" name="description" placeholder="Nhập nội dung bài viết">{{ old('description') }}</textarea>
+                                        <textarea id="summernote" class="form-control" name="description" placeholder="Nhập nội dung bài viết">{{ old('description', $product->description) }}</textarea>
                                     </div>  
                                 </div>
                                 <div class="card-footer">
@@ -397,6 +397,10 @@
                 }
             }
 
+            $(document).ready(function() {
+                updateImageUploadButtonVisibility();
+            });
+
             $('#lfm-color-gallery').on('click', function () {
                 var inputId = $(this).data('input');
                 var previewId = $(this).data('preview');
@@ -491,10 +495,6 @@
             $('input[name^="sizes["][name$="[quantity]"]').each(function () {
                 var sizeId = $(this).attr('name').match(/sizes\[(\d+)\]/)[1];
                 applySizeQuantityValidationRulesForElement($(this), sizeId);
-            });
-
-            $('#color_images_input').on('change', function() {
-                updateImageUploadButtonVisibility();
             });
 
         });

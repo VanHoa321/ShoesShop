@@ -19,6 +19,7 @@ use App\Http\Controllers\FrontEnd\AccountController as FrontEndAccountController
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\frontend\HomeController;
 use App\Http\Controllers\frontend\PostController as FrontendPostController;
+use App\Http\Controllers\Frontend\ProductController as FrontendProductController;
 use Illuminate\Support\Facades\Route;
 use UniSharp\LaravelFilemanager\Lfm;
 
@@ -192,6 +193,7 @@ Route::prefix('admin')->middleware("admin")->group(function () {
         Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('product.edit');
         Route::post('/update/{id}', [ProductController::class, 'update'])->name('product.update');
         Route::delete('/destroy/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
+        Route::post('/change-status/{id}', [ProductController::class, 'changeStatus']);
     });
 });
 
@@ -203,6 +205,9 @@ Route::post('/contact/send', [ContactController::class, 'sendContact'])->middlew
 //Frontend Post
 Route::get('/post', [FrontendPostController::class, 'index'])->name('frontend.post.index');
 Route::get('/posts/{id}', [FrontendPostController::class, 'show'])->name('frontend.posts.show');
+
+//Frontend Product
+Route::get('/product/details/{id}', [FrontendProductController::class, 'details'])->name('frontend.product.details');
 
 Route::prefix('account')->middleware("auth")->group(function () {
     Route::get('/profile', [FrontEndAccountController::class, 'profile'])->name('frontend.profile');

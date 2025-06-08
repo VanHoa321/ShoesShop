@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{{ asset('web-assets/css/owl.carousel.min.css') }}">
     <link rel="stylesheet" href="{{ asset('web-assets/css/jquery-ui.min.css') }}">
     <link rel="stylesheet" href="{{ asset('web-assets/css/nice-select.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('web-assets/css/flexslider.min.css') }}">
     <link rel="stylesheet" href="{{ asset('web-assets/css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="{{asset("assets/plugins/select2/css/select2.min.css")}}">
@@ -70,6 +71,7 @@
     <script src="{{ asset('web-assets/js/jquery.nice-select.min.js') }}"></script>
     <script src="{{ asset('web-assets/js/countdown.min.js') }}"></script>
     <script src="{{ asset('web-assets/js/wow.min.js') }}"></script>
+    <script src="{{ asset('web-assets/js/flexslider-min.js') }}"></script>
     <script src="{{ asset('web-assets/js/main.js') }}"></script>
     <script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

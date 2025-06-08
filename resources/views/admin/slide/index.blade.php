@@ -97,7 +97,7 @@
                 var check = $(this);
                 const id = check.val();
                 $.ajax({
-                    url: "/system/slide/change/" + id,
+                    url: "/admin/slide/change/" + id,
                     type: "POST",
                     data: {
                         _token: '{{ csrf_token() }}'

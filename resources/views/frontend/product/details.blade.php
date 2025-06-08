@@ -1,0 +1,577 @@
+@extends('layout/web_layout')
+@section('content')
+    <main class="main">
+
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url(/web-assets/img/breadcrumb/01.jpg)"></div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">Chi tiết sản phẩm</h4>
+                    <ul class="breadcrumb-menu">
+                        <li><a href="index-2.html"><i class="far fa-home"></i> Trang chủ</a></li>
+                        <li class="active">Chi tiết sản phẩm</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="shop-single py-100">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-9 col-lg-6 col-xxl-5">
+                        <div class="shop-single-gallery">
+                            <div class="flexslider">
+                                <ul class="slides">
+                                    @foreach($product->images as $image)
+                                        <li data-thumb="{{ $image->image }}">
+                                            <img src="{{ $image->image }}" alt="#">
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-6 col-xxl-6">
+                        <div class="shop-single-info">
+                            <h4 class="shop-single-title">{{ $product->name }}</h4>
+                            <div class="shop-single-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <i class="far fa-star"></i>
+                                <span class="rating-count"> (4 Customer Reviews)</span>
+                            </div>
+                            <div class="shop-single-price">
+                                @if($product->discount > 0)
+                                    <del>{{ number_format($product->price) }} đ</del>
+                                    <span class="amount">{{ number_format($product->price - $product->discount) }} đ</span>
+                                    <span class="discount-percentage">
+                                        GIẢM {{ round(($product->discount / $product->price) * 100) }}%
+                                    </span>
+                                @else
+                                    <span class="amount">{{ number_format($product->price) }} đ</span>
+                                @endif
+                            </div>
+                            <p class="mb-3">
+                                Mã sản phẩm: {{ $product->code }}
+                            </p>
+                            <p class="mb-3">
+                                {{ $product->summary }}
+                            </p>
+                            <div class="shop-single-cs">
+                                <div class="row">
+                                    
+                                    <div class="col-md-3 col-lg-4 col-xl-3">
+                                        <div class="shop-single-size">
+                                            <h6>Size</h6>
+                                           <select class="select">
+                                                <option value="">Choose Size</option>
+                                                <option value="1">Extra Small</option>
+                                                <option value="2">Small</option>
+                                                <option value="3">Medium</option>
+                                                <option value="4">Extra Large</option>
+                                           </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-12 col-xl-6">
+                                        <div class="shop-single-color">
+                                            <h6>Color</h6>
+                                            <ul class="shop-checkbox-list color">
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="color1">
+                                                        <label class="form-check-label" for="color1"><span style="background-color: #606ddd"></span></label>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="color2">
+                                                        <label class="form-check-label" for="color2"><span style="background-color: #4caf50"></span></label>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="color3">
+                                                        <label class="form-check-label" for="color3"><span style="background-color: #17a2b8"></span></label>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="color4">
+                                                        <label class="form-check-label" for="color4"><span style="background-color: #ffc107"></span></label>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="color5">
+                                                        <label class="form-check-label" for="color5"><span style="background-color: #f44336"></span></label>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="shop-single-sortinfo">
+                                <ul>
+                                    <li>Stock: <span>Available</span></li>
+                                    <li>SKU: <span>676TYWV</span></li>
+                                    <li>Category: <span>Electronics</span></li>
+                                    <li>Sold By: <a href="#">Fast Shop</a></li>
+                                    <li>Tags: <a href="#">Headphone</a>,<a href="#">Bluetooth</a>,<a href="#">Modern</a>,<a href="#">Shop</a></li>
+                                </ul>
+                            </div>
+                            <div class="shop-single-action">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4 col-lg-4 col-xl-3">
+                                        <div class="shop-single-size">
+                                            <div class="shop-cart-qty">
+                                                <button class="minus-btn"><i class="fal fa-minus"></i></button>
+                                                <input class="quantity" type="text" value="1" disabled="">
+                                                <button class="plus-btn"><i class="fal fa-plus"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 col-lg-12 col-xl-6">
+                                        <div class="shop-single-btn">
+                                            <a href="#" class="theme-btn"><span class="far fa-shopping-bag"></span>Add To Cart</a>
+                                            <a href="#" class="theme-btn theme-btn2" data-tooltip="tooltip" title="Add To Wishlist"><span class="far fa-heart"></span></a>
+                                            <a href="#" class="theme-btn theme-btn2" data-tooltip="tooltip" title="Add To Compare"><span class="far fa-arrows-repeat"></span></a>
+                                        </div>
+                                    </div>                                  
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- shop single details -->
+                <div class="shop-single-details">
+                    <nav>
+                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                            <button class="nav-link active" id="nav-tab1" data-bs-toggle="tab" data-bs-target="#tab1"
+                                type="button" role="tab" aria-controls="tab1" aria-selected="true">Description</button>
+                            <button class="nav-link" id="nav-tab2" data-bs-toggle="tab" data-bs-target="#tab2"
+                                type="button" role="tab" aria-controls="tab2" aria-selected="false">Additional
+                                Info</button>
+                            <button class="nav-link" id="nav-tab3" data-bs-toggle="tab" data-bs-target="#tab3"
+                                type="button" role="tab" aria-controls="tab3" aria-selected="false">Reviews
+                                (05)</button>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="nav-tab1">
+                            <div class="shop-single-desc">
+                                <p>
+                                    There are many variations of passages of Lorem Ipsum available, but the majority
+                                    have suffered alteration in some form, by injected humour, or randomised words which
+                                    don't look even slightly believable. If you are going to use a passage of Lorem
+                                    Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of
+                                    text. All the Lorem Ipsum generators on the Internet tend to repeat predefined
+                                    chunks as necessary, making this the first true generator on the Internet.
+                                </p>
+                                <p>
+                                    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+                                    doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
+                                    veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam
+                                    voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur
+                                    magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est,
+                                    qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.
+                                </p>
+                                <div class="row">
+                                    <div class="col-lg-5 col-xl-4">
+                                        <div class="shop-single-list">
+                                            <h5 class="title">Features</h5>
+                                            <ul>
+                                                <li>Capture 4K30 Video and 30MP Photos</li>
+                                                <li>Game Style Controller with Touchscreen</li>
+                                                <li>Capture 4K30 Video and 30MP Photos</li>
+                                                <li>View Live Camera Feed</li>
+                                                <li>Full Control of HERO6 Black</li>
+                                                <li>Use App for Dedicated Camera Operation</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-xl-5">
+                                        <div class="shop-single-list">
+                                            <h5 class="title">Specifications</h5>
+                                            <ul>
+                                                <li><span>Materials:</span> Leather, Cotton, Rubber, Foam</li>
+                                                <li><span>Model Year:</span> 2025</li>
+                                                <li><span>Available Sizes:</span> 8.5, 9.0, 9.5, 10.0</li>
+                                                <li><span>Manufacturer:</span> Reebok Inc.</li>
+                                                <li><span>Available Colors:</span> White/Red/Blue,Black/Orange/Green</li>
+                                                <li><span>Made In:</span> USA</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="nav-tab2">
+                            <div class="shop-single-additional">
+                                <p>
+                                    There are many variations of passages of Lorem Ipsum available, but the majority
+                                    have suffered alteration in some form, by injected humour, or randomised words which
+                                    don't look even slightly believable. If you are going to use a passage of Lorem
+                                    Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of
+                                    text. All the Lorem Ipsum generators on the Internet tend to repeat predefined
+                                    chunks as necessary, making this the first true generator on the Internet.
+                                </p>
+                                <p>
+                                    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+                                    doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
+                                    veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam
+                                    voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur
+                                    magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est,
+                                    qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.
+                                </p>
+                                <div class="shop-single-list">
+                                    <h5 class="title">Shipping Options:</h5>
+                                    <ul>
+                                        <li><span>Standard:</span> 6-7 Days, Shipping Cost - Free</li>
+                                        <li><span>Express:</span> 1-2 Days, Shipping Cost - $20</li>
+                                        <li><span>Courier:</span> 2-3 Days, Shipping Cost - $30</li>
+                                        <li><span>Fastgo:</span> 1-3 Days, Shipping Cost - $15</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="nav-tab3">
+                            <div class="shop-single-review">
+                                <div class="blog-comments">
+                                    <h5>Reviews (05)</h5>
+                                    <div class="blog-comments-wrapper">
+                                        <div class="blog-comments-single mt-0">
+                                            <img src="/web-assets/img/blog/com-1.jpg" alt="thumb">
+                                            <div class="blog-comments-content">
+                                                <h5>Sinkler Denola</h5>
+                                                <span><i class="far fa-clock"></i> 31 January, 2025</span>
+                                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries but also the leap electronic typesetting, remaining essentially unchanged. It was popularised in the with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                                                <a href="#"><i class="far fa-reply"></i> Reply</a>
+                                                <div class="review-rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="blog-comments-single ms-md-5">
+                                            <img src="/web-assets/img/blog/com-2.jpg" alt="thumb">
+                                            <div class="blog-comments-content">
+                                                <h5>Daniel Wellman</h5>
+                                                <span><i class="far fa-clock"></i> 31 January, 2025</span>
+                                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries but also the leap electronic typesetting, remaining essentially unchanged. It was popularised in the with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                                                <a href="#"><i class="far fa-reply"></i> Reply</a>
+                                                <div class="review-rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="far fa-star"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="blog-comments-single">
+                                            <img src="/web-assets/img/blog/com-3.jpg" alt="thumb">
+                                            <div class="blog-comments-content">
+                                                <h5>Kenneth Evans</h5>
+                                                <span><i class="far fa-clock"></i> 31 January, 2025</span>
+                                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries but also the leap electronic typesetting, remaining essentially unchanged. It was popularised in the with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                                                <a href="#"><i class="far fa-reply"></i> Reply</a>
+                                                <div class="review-rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star-half-alt"></i>
+                                                    <i class="far fa-star"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="blog-comments-form">
+                                        <h4 class="mb-4">Leave A Review</h4>
+                                        <form action="#">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" placeholder="Your Name*">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <input type="email" class="form-control" placeholder="Your Email*">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" placeholder="Your Subject*">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <select class="form-control form-select">
+                                                            <option value="">Your Rating</option>
+                                                            <option value="5">5 Stars</option>
+                                                            <option value="4">4 Stars</option>
+                                                            <option value="3">3 Stars</option>
+                                                            <option value="2">2 Stars</option>
+                                                            <option value="1">1 Star</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <textarea class="form-control" rows="5" placeholder="Your Review*"></textarea>
+                                                    </div>
+                                                    <button type="submit" class="theme-btn"><span class="far fa-paper-plane"></span> Submit Review</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- shop single details end -->
+
+                <!-- similar item shop -->
+                <div class="seller-area pt-50 pb-60">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="site-heading-inline">
+                                    <h2 class="site-title">Also Available At</h2>
+                                    <a href="#">View More <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="seller-item">
+                                    <div class="seller-img">
+                                        <a href="#"><img src="/web-assets/img/seller/01.png" alt=""></a>
+                                    </div>
+                                    <a href="#" class="seller-title">Fast Shop</a>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="seller-item">
+                                    <div class="seller-img">
+                                        <a href="#"><img src="/web-assets/img/seller/02.png" alt=""></a>
+                                    </div>
+                                    <a href="#" class="seller-title">Borcelle Shop</a>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="seller-item">
+                                    <div class="seller-img">
+                                        <a href="#"><img src="/web-assets/img/seller/03.png" alt=""></a>
+                                    </div>
+                                    <a href="#" class="seller-title">Fradel Shop</a>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="seller-item">
+                                    <div class="seller-img">
+                                        <a href="#"><img src="/web-assets/img/seller/04.png" alt=""></a>
+                                    </div>
+                                    <a href="#" class="seller-title">Liceria Shop</a>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="seller-item">
+                                    <div class="seller-img">
+                                        <a href="#"><img src="/web-assets/img/seller/05.png" alt=""></a>
+                                    </div>
+                                    <a href="#" class="seller-title">Fashion Shop</a>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="seller-item">
+                                    <div class="seller-img">
+                                        <a href="#"><img src="/web-assets/img/seller/06.png" alt=""></a>
+                                    </div>
+                                    <a href="#" class="seller-title">Quick Shop</a>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="seller-item">
+                                    <div class="seller-img">
+                                        <a href="#"><img src="/web-assets/img/seller/07.png" alt=""></a>
+                                    </div>
+                                    <a href="#" class="seller-title">Sebastin Shop</a>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="seller-item">
+                                    <div class="seller-img">
+                                        <a href="#"><img src="/web-assets/img/seller/08.png" alt=""></a>
+                                    </div>
+                                    <a href="#" class="seller-title">Jiorox Shop</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- similar item shop end -->
+
+                <!-- related item -->
+                <div class="product-area related-item">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="site-heading-inline">
+                                    <h2 class="site-title">Related Items</h2>
+                                    <a href="#">View More <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-lg-3">
+                                <div class="product-item">
+                                    <div class="product-img">
+                                        <span class="type new">New</span>
+                                        <a href="shop-single.html"><img src="/web-assets/img/product/p7.png" alt=""></a>
+                                        <div class="product-action-wrap">
+                                            <div class="product-action">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#quickview" data-tooltip="tooltip" title="Quick View"><i class="far fa-eye"></i></a>
+                                                <a href="#" data-tooltip="tooltip" title="Add To Wishlist"><i class="far fa-heart"></i></a>
+                                                <a href="#" data-tooltip="tooltip" title="Add To Compare"><i class="far fa-arrows-repeat"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="product-content">
+                                        <h3 class="product-title"><a href="shop-single.html">Bluetooth Earphones</a></h3>
+                                        <div class="product-rate">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                        <div class="product-bottom">
+                                            <div class="product-price">
+                                                <span>$100.00</span>
+                                            </div>
+                                            <button type="button" class="product-cart-btn" data-bs-placement="left" data-tooltip="tooltip" title="Add To Cart">
+                                                <i class="far fa-shopping-bag"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="product-item">
+                                    <div class="product-img">
+                                        <span class="type hot">Hot</span>
+                                        <a href="shop-single.html"><img src="/web-assets/img/product/p8.png" alt=""></a>
+                                        <div class="product-action-wrap">
+                                            <div class="product-action">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#quickview" data-tooltip="tooltip" title="Quick View"><i class="far fa-eye"></i></a>
+                                                <a href="#" data-tooltip="tooltip" title="Add To Wishlist"><i class="far fa-heart"></i></a>
+                                                <a href="#" data-tooltip="tooltip" title="Add To Compare"><i class="far fa-arrows-repeat"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="product-content">
+                                        <h3 class="product-title"><a href="shop-single.html">Bluetooth Earphones</a></h3>
+                                        <div class="product-rate">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                        <div class="product-bottom">
+                                            <div class="product-price">
+                                                <span>$100.00</span>
+                                            </div>
+                                            <button type="button" class="product-cart-btn" data-bs-placement="left" data-tooltip="tooltip" title="Add To Cart">
+                                                <i class="far fa-shopping-bag"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="product-item">
+                                    <div class="product-img">
+                                        <span class="type oos">Out Of Stock</span>
+                                        <a href="shop-single.html"><img src="/web-assets/img/product/p12.png" alt=""></a>
+                                        <div class="product-action-wrap">
+                                            <div class="product-action">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#quickview" data-tooltip="tooltip" title="Quick View"><i class="far fa-eye"></i></a>
+                                                <a href="#" data-tooltip="tooltip" title="Add To Wishlist"><i class="far fa-heart"></i></a>
+                                                <a href="#" data-tooltip="tooltip" title="Add To Compare"><i class="far fa-arrows-repeat"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="product-content">
+                                        <h3 class="product-title"><a href="shop-single.html">Bluetooth Earphones</a></h3>
+                                        <div class="product-rate">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                        <div class="product-bottom">
+                                            <div class="product-price">
+                                                <span>$100.00</span>
+                                            </div>
+                                            <button type="button" class="product-cart-btn" data-bs-placement="left" data-tooltip="tooltip" title="Add To Cart">
+                                                <i class="far fa-shopping-bag"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="product-item">
+                                    <div class="product-img">
+                                        <span class="type discount">10% Off</span>
+                                        <a href="shop-single.html"><img src="/web-assets/img/product/p14.png" alt=""></a>
+                                        <div class="product-action-wrap">
+                                            <div class="product-action">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#quickview" data-tooltip="tooltip" title="Quick View"><i class="far fa-eye"></i></a>
+                                                <a href="#" data-tooltip="tooltip" title="Add To Wishlist"><i class="far fa-heart"></i></a>
+                                                <a href="#" data-tooltip="tooltip" title="Add To Compare"><i class="far fa-arrows-repeat"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="product-content">
+                                        <h3 class="product-title"><a href="shop-single.html">Bluetooth Earphones</a></h3>
+                                        <div class="product-rate">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                        <div class="product-bottom">
+                                            <div class="product-price">
+                                                <del>$120.00</del>
+                                                <span>$100.00</span>
+                                            </div>
+                                            <button type="button" class="product-cart-btn" data-bs-placement="left" data-tooltip="tooltip" title="Add To Cart">
+                                                <i class="far fa-shopping-bag"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- related item end -->
+            </div>
+        </div>
+        <!-- shop single end -->
+
+    </main>
+@endsection

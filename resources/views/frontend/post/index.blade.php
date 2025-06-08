@@ -1,6 +1,6 @@
 @extends('layout/web_layout')
 @section('content')
-<div class="site-breadcrumb">
+    <div class="site-breadcrumb">
         <div class="site-breadcrumb-bg" style="background: url(/web-assets/img/breadcrumb/01.jpg)"></div>
         <div class="container">
             <div class="site-breadcrumb-wrap">
