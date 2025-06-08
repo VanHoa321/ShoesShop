@@ -46,7 +46,7 @@
                             @auth
                                 <li><a href="{{ route('frontend.home.index') }}" class="list-item"><i class="far fa-heart"></i></a></li>
                             @endauth
-                            <li><a href="{{ route('frontend.home.index') }}" class="list-item"><i class="far fa-heart"></i></a></li>
+                            <li><a href="#" class="list-item"><i class="far fa-cart-shopping"></i><span id="cart-item-count">{{ $totalItemsInCart ?? 0 }}</span></a></li>
                         </ul>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                 <div class="collapse navbar-collapse" id="main_nav">
                     <ul class="navbar-nav">
                         <li class="nav-item"><a class="nav-link" href="{{ route("frontend.home.index") }}">Trang chủ</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route("frontend.home.index") }}">Sản phẩm</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route("frontend.product.index") }}">Sản phẩm</a></li>
                         @auth
                             <li class="nav-item"><a class="nav-link" href="{{ route('frontend.home.index') }}">Yêu thích</a></li>
                         @endauth

@@ -16,6 +16,7 @@ use App\Http\Controllers\admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\FrontEnd\AccountController as FrontEndAccountController;
+use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\frontend\HomeController;
 use App\Http\Controllers\frontend\PostController as FrontendPostController;
@@ -207,7 +208,18 @@ Route::get('/post', [FrontendPostController::class, 'index'])->name('frontend.po
 Route::get('/posts/{id}', [FrontendPostController::class, 'show'])->name('frontend.posts.show');
 
 //Frontend Product
+Route::get('/product', [FrontendProductController::class, 'index'])->name('frontend.product.index');
 Route::get('/product/details/{id}', [FrontendProductController::class, 'details'])->name('frontend.product.details');
+
+//Frontend Cart
+Route::prefix('cart')->controller(CartController::class)->group(function () {
+    Route::get('/', 'index')->name('frontend.cart.index');
+    Route::post('/add', 'add')->name('frontend.cart.add');
+    Route::post('/update', 'update')->name('frontend.cart.update');
+    Route::post('/remove', 'remove')->name('frontend.cart.remove');
+    Route::post('/clear', 'clear')->name('frontend.cart.clear');
+});
+
 
 Route::prefix('account')->middleware("auth")->group(function () {
     Route::get('/profile', [FrontEndAccountController::class, 'profile'])->name('frontend.profile');

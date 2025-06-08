@@ -81,8 +81,8 @@
         toastr.options = {
             closeButton: true,
             progressBar: true,
-            positionClass: 'toast-top-right',
-            timeOut: 3000,
+            positionClass: 'toast-bottom-right',
+            timeOut: 2000,
             "extendedTimeOut": "1000"
         };
     </script>

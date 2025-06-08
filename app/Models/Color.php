@@ -19,4 +19,9 @@ class Color extends Model
     protected $primaryKey = 'id';
 
     public $timestamps = false;
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

@@ -54,77 +54,66 @@
                                 @endif
                             </div>
                             <p class="mb-3">
-                                Mã sản phẩm: {{ $product->code }}
-                            </p>
-                            <p class="mb-3">
                                 {{ $product->summary }}
                             </p>
                             <div class="shop-single-cs">
                                 <div class="row">
-                                    
-                                    <div class="col-md-3 col-lg-4 col-xl-3">
-                                        <div class="shop-single-size">
-                                            <h6>Size</h6>
-                                           <select class="select">
-                                                <option value="">Choose Size</option>
-                                                <option value="1">Extra Small</option>
-                                                <option value="2">Small</option>
-                                                <option value="3">Medium</option>
-                                                <option value="4">Extra Large</option>
-                                           </select>
+                                    @if($relatedProducts->isNotEmpty())
+                                        <div class="col-md-12 col-lg-12 col-xl-6 mb-2">
+                                            <div class="shop-single-color">
+                                                <h6>Màu sắc khác</h6>
+                                                <div class="row g-3 align-items-center" id="colorOptions">
+                                                    @foreach($relatedProducts as $relatedProduct)
+                                                        <div class="col-auto">
+                                                            <a href="{{ route('frontend.product.details', $relatedProduct->id) }}" class="text-decoration-none">
+                                                                <img src="{{ $relatedProduct->thumbnail }}" alt="{{ $relatedProduct->color->name }}" class="img-fluid" style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ddd;">
+                                                                <p class="text-center mb-0" style="font-size: 12px;">{{ $relatedProduct->color->name }}</p>
+                                                            </a>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6 col-lg-12 col-xl-6">
-                                        <div class="shop-single-color">
-                                            <h6>Color</h6>
-                                            <ul class="shop-checkbox-list color">
-                                                <li>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" id="color1">
-                                                        <label class="form-check-label" for="color1"><span style="background-color: #606ddd"></span></label>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" id="color2">
-                                                        <label class="form-check-label" for="color2"><span style="background-color: #4caf50"></span></label>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" id="color3">
-                                                        <label class="form-check-label" for="color3"><span style="background-color: #17a2b8"></span></label>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" id="color4">
-                                                        <label class="form-check-label" for="color4"><span style="background-color: #ffc107"></span></label>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" id="color5">
-                                                        <label class="form-check-label" for="color5"><span style="background-color: #f44336"></span></label>
-                                                    </div>
-                                                </li>
-                                            </ul>
+                                    @endif
+                                    <div class="col-md-12 col-lg-12 col-xl-12 mb-2">
+                                        <div class="shop-single-size">
+                                            <h6 id="sizeHeading">Kích thước <span id="quantitySpan"></span></h6>
+                                            <input type="hidden" id="selectedProductSizeId" value="">
+                                            <div class="size-options d-flex flex-wrap gap-2 mt-2" id="sizeOptions">
+                                                @php
+                                                    $firstSize = $product->sizes->sortBy('size.name')->first();
+                                                @endphp
+                                                @foreach($product->sizes->sortBy('size.name') as $productSize)
+                                                    <button type="button" class="btn btn-outline-secondary @if($productSize->quantity == 0) disabled @endif size-box"
+                                                            data-product-size-id="{{ $productSize->id }}"
+                                                            data-size-id="{{ $productSize->size->id }}"
+                                                            data-quantity="{{ $productSize->quantity }}"
+                                                            onclick="selectSize(this)">
+                                                        {{ $productSize->size->name }}
+                                                    </button>
+                                                @endforeach
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="shop-single-sortinfo">
                                 <ul>
-                                    <li>Stock: <span>Available</span></li>
-                                    <li>SKU: <span>676TYWV</span></li>
-                                    <li>Category: <span>Electronics</span></li>
-                                    <li>Sold By: <a href="#">Fast Shop</a></li>
-                                    <li>Tags: <a href="#">Headphone</a>,<a href="#">Bluetooth</a>,<a href="#">Modern</a>,<a href="#">Shop</a></li>
+                                    <li>Mã sản phẩm: <span>{{ $product->code }}</span></li>
+                                    <li>Thương hiệu: <span>{{ $product->brand->name }}</span></li>
+                                    <li>Màu sắc: <span>{{ $product->color->name }}</span></li>
+                                    @if($product->categories && count($product->categories))
+                                        <li>Danh mục:
+                                            @foreach($product->categories as $category)
+                                                <a href="#">{{ $category->name }}</a>{{ !$loop->last ? ',' : '' }}
+                                            @endforeach
+                                        </li>
+                                    @endif
                                 </ul>
                             </div>
                             <div class="shop-single-action">
                                 <div class="row align-items-center">
-                                    <div class="col-md-4 col-lg-4 col-xl-3">
+                                    <div class="col-md-3 col-lg-4 col-xl-3">
                                         <div class="shop-single-size">
                                             <div class="shop-cart-qty">
                                                 <button class="minus-btn"><i class="fal fa-minus"></i></button>
@@ -133,11 +122,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-8 col-lg-12 col-xl-6">
+                                    <div class="col-md-9 col-lg-12 col-xl-9">
                                         <div class="shop-single-btn">
-                                            <a href="#" class="theme-btn"><span class="far fa-shopping-bag"></span>Add To Cart</a>
-                                            <a href="#" class="theme-btn theme-btn2" data-tooltip="tooltip" title="Add To Wishlist"><span class="far fa-heart"></span></a>
-                                            <a href="#" class="theme-btn theme-btn2" data-tooltip="tooltip" title="Add To Compare"><span class="far fa-arrows-repeat"></span></a>
+                                            <a href="#" class="theme-btn add-to-cart" data-price="{{ $product->discount > 0 ? $product->price - $product->discount : $product->price }}"><span class="far fa-shopping-bag"></span>Thêm giỏ hàng</a>
+                                            <a href="#" class="theme-btn theme-btn2" data-tooltip="tooltip" title="Thêm vào yêu thích"><span class="far fa-heart"></span></a>
+                                            <a href="#" class="theme-btn theme-btn2" data-tooltip="tooltip" title="Thêm vào so sánh"><span class="far fa-arrows-repeat"></span></a>
                                         </div>
                                     </div>                                  
                                 </div>
@@ -146,17 +135,16 @@
                     </div>
                 </div>
 
-                <!-- shop single details -->
                 <div class="shop-single-details">
                     <nav>
                         <div class="nav nav-tabs" id="nav-tab" role="tablist">
                             <button class="nav-link active" id="nav-tab1" data-bs-toggle="tab" data-bs-target="#tab1"
-                                type="button" role="tab" aria-controls="tab1" aria-selected="true">Description</button>
-                            <button class="nav-link" id="nav-tab2" data-bs-toggle="tab" data-bs-target="#tab2"
+                                type="button" role="tab" aria-controls="tab1" aria-selected="true">Thông tin sản phẩm</button>
+                            <!-- <button class="nav-link" id="nav-tab2" data-bs-toggle="tab" data-bs-target="#tab2"
                                 type="button" role="tab" aria-controls="tab2" aria-selected="false">Additional
-                                Info</button>
+                                Info</button> -->
                             <button class="nav-link" id="nav-tab3" data-bs-toggle="tab" data-bs-target="#tab3"
-                                type="button" role="tab" aria-controls="tab3" aria-selected="false">Reviews
+                                type="button" role="tab" aria-controls="tab3" aria-selected="false">Bình luận
                                 (05)</button>
                         </div>
                     </nav>
@@ -164,49 +152,8 @@
                         <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="nav-tab1">
                             <div class="shop-single-desc">
                                 <p>
-                                    There are many variations of passages of Lorem Ipsum available, but the majority
-                                    have suffered alteration in some form, by injected humour, or randomised words which
-                                    don't look even slightly believable. If you are going to use a passage of Lorem
-                                    Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of
-                                    text. All the Lorem Ipsum generators on the Internet tend to repeat predefined
-                                    chunks as necessary, making this the first true generator on the Internet.
+                                    {!! $product->description !!}
                                 </p>
-                                <p>
-                                    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
-                                    doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
-                                    veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam
-                                    voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur
-                                    magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est,
-                                    qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.
-                                </p>
-                                <div class="row">
-                                    <div class="col-lg-5 col-xl-4">
-                                        <div class="shop-single-list">
-                                            <h5 class="title">Features</h5>
-                                            <ul>
-                                                <li>Capture 4K30 Video and 30MP Photos</li>
-                                                <li>Game Style Controller with Touchscreen</li>
-                                                <li>Capture 4K30 Video and 30MP Photos</li>
-                                                <li>View Live Camera Feed</li>
-                                                <li>Full Control of HERO6 Black</li>
-                                                <li>Use App for Dedicated Camera Operation</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-xl-5">
-                                        <div class="shop-single-list">
-                                            <h5 class="title">Specifications</h5>
-                                            <ul>
-                                                <li><span>Materials:</span> Leather, Cotton, Rubber, Foam</li>
-                                                <li><span>Model Year:</span> 2025</li>
-                                                <li><span>Available Sizes:</span> 8.5, 9.0, 9.5, 10.0</li>
-                                                <li><span>Manufacturer:</span> Reebok Inc.</li>
-                                                <li><span>Available Colors:</span> White/Red/Blue,Black/Orange/Green</li>
-                                                <li><span>Made In:</span> USA</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="nav-tab2">
@@ -337,88 +284,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- shop single details end -->
-
-                <!-- similar item shop -->
-                <div class="seller-area pt-50 pb-60">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="site-heading-inline">
-                                    <h2 class="site-title">Also Available At</h2>
-                                    <a href="#">View More <i class="fas fa-arrow-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <div class="seller-item">
-                                    <div class="seller-img">
-                                        <a href="#"><img src="/web-assets/img/seller/01.png" alt=""></a>
-                                    </div>
-                                    <a href="#" class="seller-title">Fast Shop</a>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="seller-item">
-                                    <div class="seller-img">
-                                        <a href="#"><img src="/web-assets/img/seller/02.png" alt=""></a>
-                                    </div>
-                                    <a href="#" class="seller-title">Borcelle Shop</a>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="seller-item">
-                                    <div class="seller-img">
-                                        <a href="#"><img src="/web-assets/img/seller/03.png" alt=""></a>
-                                    </div>
-                                    <a href="#" class="seller-title">Fradel Shop</a>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="seller-item">
-                                    <div class="seller-img">
-                                        <a href="#"><img src="/web-assets/img/seller/04.png" alt=""></a>
-                                    </div>
-                                    <a href="#" class="seller-title">Liceria Shop</a>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="seller-item">
-                                    <div class="seller-img">
-                                        <a href="#"><img src="/web-assets/img/seller/05.png" alt=""></a>
-                                    </div>
-                                    <a href="#" class="seller-title">Fashion Shop</a>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="seller-item">
-                                    <div class="seller-img">
-                                        <a href="#"><img src="/web-assets/img/seller/06.png" alt=""></a>
-                                    </div>
-                                    <a href="#" class="seller-title">Quick Shop</a>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="seller-item">
-                                    <div class="seller-img">
-                                        <a href="#"><img src="/web-assets/img/seller/07.png" alt=""></a>
-                                    </div>
-                                    <a href="#" class="seller-title">Sebastin Shop</a>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="seller-item">
-                                    <div class="seller-img">
-                                        <a href="#"><img src="/web-assets/img/seller/08.png" alt=""></a>
-                                    </div>
-                                    <a href="#" class="seller-title">Jiorox Shop</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- similar item shop end -->
 
                 <!-- related item -->
                 <div class="product-area related-item">
@@ -571,7 +436,75 @@
                 <!-- related item end -->
             </div>
         </div>
-        <!-- shop single end -->
-
     </main>
+@endsection
+@section('scripts')
+    <script>
+        function selectSize(element) {
+            if (element.classList.contains('disabled')) return;
+
+            const sizeBoxes = document.querySelectorAll('.size-box');
+
+            sizeBoxes.forEach(box => {
+                if (box !== element && box.classList.contains('theme-btn')) {
+                    box.classList.remove('theme-btn');
+                    box.classList.add('btn-outline-secondary');
+                }
+            });
+
+            element.classList.remove('btn-outline-secondary');
+            element.classList.add('theme-btn');
+
+            const sizeName = element.textContent.trim();
+            const quantity = element.getAttribute('data-quantity');
+            const productSizeId = element.getAttribute('data-product-size-id');
+            document.getElementById('sizeHeading').firstChild.nodeValue = `Kích thước ${sizeName} `;
+            document.getElementById('quantitySpan').textContent = `(Số lượng còn: ${quantity})`;
+            document.getElementById('selectedProductSizeId').value = productSizeId;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const sizeBoxes = document.querySelectorAll('.size-box');
+            const firstAvailable = Array.from(sizeBoxes).find(box => !box.classList.contains('disabled'));
+            if (firstAvailable) {
+                selectSize(firstAvailable);
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.add-to-cart').on('click', function(e) {
+                e.preventDefault();
+
+                var productSizeId = $('#selectedProductSizeId').val();
+                var quantity = parseInt($('.quantity').val());
+                var price = $(this).data('price');
+
+                $.ajax({
+                    url: "{{ route('frontend.cart.add') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        product_size_id: productSizeId,
+                        quantity: quantity,
+                        price: price
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            toastr.success('Sản phẩm đã được thêm vào giỏ hàng!');
+                            document.getElementById('cart-item-count').textContent = response.count;
+                        } 
+                        else {
+                            toastr.error('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("Lỗi AJAX:", xhr.responseText);
+                        alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

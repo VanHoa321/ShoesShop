@@ -56,7 +56,7 @@
                                         @foreach ($items as $item)
                                             <tr id="category-{{ $item->id }}">
                                                 <td>{{ $counter++ }}</td>
-                                                <td><img src="{{ $item->image }}" alt="category Image" style="width: auto; height: 50px; border-radius: 10%; object-fit: cover; margin-right: 10px;"></td>
+                                                <td><img src="{{ $item->image }}" alt="category Image" style="width: auto; height: 70px; border-radius: 10%; object-fit: cover; margin-right: 10px;"></td>
                                                 <td>{{ $item->name }}</td>
                                                 <td>
                                                     <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
