@@ -140,6 +140,43 @@
             });
         });
     </script>
+    
+    <script>
+        document.querySelectorAll('.favourite-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const productId = this.getAttribute('data-product-id');
+                const isFavourited = this.getAttribute('data-is-favourited') === 'true';
+                const url = isFavourited ?
+                    '{{ url("account/favourite") }}/' + productId :
+                    '{{ route("frontend.add-favourite", ":id") }}'.replace(':id', productId);
+                const method = isFavourited ? 'DELETE' : 'POST';
+
+                fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            toastr.success(data.message);
+                            this.classList.toggle('favourited');
+                            this.setAttribute('data-is-favourited', isFavourited ? 'false' : 'true');
+                            this.setAttribute('title', isFavourited ? 'Yêu thích' : 'Bỏ yêu thích');
+                        } else {
+                            toastr.error(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        toastr.error('Bạn cần phải đăng nhập để thực hiện chức năng này');
+                        console.error(error);
+                    });
+            });
+        });
+</script>
 </body>
 
 </html>

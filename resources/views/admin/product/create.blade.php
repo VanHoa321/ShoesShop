@@ -31,7 +31,7 @@
                             <div class="card-header">
                                 <h3 class="card-title">Điền các trường dữ liệu</h3>                               
                             </div>
-                            <form method="post" action="{{route("product.store")}}" id="quickForm">
+                            <form method="post" action="{{route('product.store')}}" id="quickForm">
                                 @csrf
                                 <div class="card-body">                           
                                     <div class="row">
@@ -67,7 +67,7 @@
                                                         <label>Thương hiệu</label>
                                                         <select name="brand_id" class="form-control select2bs4" style="width: 100%">
                                                             @foreach($brands as $item)
-                                                                <option value="{{$item->id}}" {{ old('branch_id') == $item->id ? 'selected' : '' }}>{{$item->name}}</option>
+                                                                <option value="{{$item->id}}" {{ old('brand_id') == $item->id ? 'selected' : '' }}>{{$item->name}}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -150,7 +150,7 @@
                                                             $oldSizeData = old('sizes.' . $size->id);
                                                             $isSizeSelected = $oldSizeData && ($oldSizeData['selected'] ?? '0') == '1';
                                                         @endphp
-                                                        <div class="col-md-3 col-sm-6 mb-3">
+                                                        <div class="col-md-2 col-sm-6 mb-3">
                                                             <div class="card">
                                                                 <div class="card-header">
                                                                     <button type="button" class="btn btn-outline-secondary w-100 size-toggle-btn {{ $isSizeSelected ? 'btn-info' : '' }}"
@@ -159,16 +159,7 @@
                                                                         <span class="selection-icon" style="display:{{ $isSizeSelected ? 'inline' : 'none' }}; margin-left: 5px;"><i class="fa fa-check-circle"></i></span>
                                                                     </button>
                                                                 </div>
-                                                                <div class="card-body size-details-fields" id="size_details_{{ $size->id }}" style="display:{{ $isSizeSelected ? 'block' : 'none' }};">
-                                                                    <div class="form-group">
-                                                                        <label class="mb-1">Số lượng</label>
-                                                                        <input type="number" name="sizes[{{ $size->id }}][quantity]" 
-                                                                            class="form-control" 
-                                                                            placeholder="VD: 100" 
-                                                                            value="{{ $oldSizeData['quantity'] ?? '' }}">
-                                                                    </div>
-                                                                    <input type="hidden" name="sizes[{{ $size->id }}][selected]" value="{{ $isSizeSelected ? '1' : '0' }}" class="size-selected-input">
-                                                                </div>
+                                                                <input type="hidden" name="sizes[{{ $size->id }}][selected]" value="{{ $isSizeSelected ? '1' : '0' }}" class="size-selected-input">
                                                             </div>
                                                         </div>
                                                     @endforeach
@@ -278,7 +269,10 @@
                     summary: {
                         required: true,
                         minlength: 10
-                    }                
+                    },
+                    'sizes[]': {
+                        required: true
+                    }
                 },
                 messages: {
                     name: {
@@ -306,6 +300,9 @@
                     summary: {
                         required: "Mô tả ngắn không được để trống!",
                         minlength: "Mô tả ngắn phải có ít nhất {0} ký tự!"
+                    },
+                    'sizes[]': {
+                        required: "Vui lòng chọn ít nhất một size!"
                     }
                 },
                 errorElement: 'span',
@@ -364,7 +361,6 @@
                     `);
                 },
                 matcher: function(params, data) {
-
                     if ($.trim(params.term) === '') {
                         return data;
                     }
@@ -444,59 +440,29 @@
             // Toggle size
             $('.size-toggle-btn').on('click', function () {
                 var sizeId = $(this).data('size-id');
-                var $details = $(`#size_details_${sizeId}`);
-                var $selectedInput = $details.find('.size-selected-input');
                 var $selectionIcon = $(this).find('.selection-icon');
-                var $quantityInput = $details.find('input[name$="[quantity]"]');
+                var $input = $(`input[name="sizes[${sizeId}][selected]"]`);
 
                 if ($(this).hasClass('btn-info')) {
                     $(this).removeClass('btn-info').addClass('btn-outline-secondary');
-                    $details.hide();
-                    $selectedInput.val('0');
                     $selectionIcon.hide();
-
-                    $quantityInput.removeAttr('name').val('');
-                    $selectedInput.removeAttr('name');
-                    validator.element($quantityInput);
+                    $input.val('0');
                 } else {
                     $(this).removeClass('btn-outline-secondary').addClass('btn-info');
-                    $details.show();
-                    $selectedInput.val('1');
                     $selectionIcon.show();
-
-                    $quantityInput.attr('name', `sizes[${sizeId}][quantity]`);
-                    $selectedInput.attr('name', `sizes[${sizeId}][selected]`);
-
-                    applySizeQuantityValidationRulesForElement($quantityInput, sizeId);
+                    $input.val('1');
                 }
-            });
 
-            // Áp dụng rules validation theo từng size
-            function applySizeQuantityValidationRulesForElement(element, sizeId) {
-                var sizeName = $(`.size-toggle-btn[data-size-id="${sizeId}"]`).text().trim();
-
-                element.rules('remove');
-                element.rules('add', {
-                    required: true,
-                    min: 0,
-                    messages: {
-                        required: `Số lượng cho ${sizeName} không được để trống!`,
-                        min: `Số lượng cho ${sizeName} phải lớn hơn hoặc bằng 0!`
-                    }
-                });
-                validator.element(element);
-            }
-
-            // Áp dụng rule cho dữ liệu cũ
-            $('input[name^="sizes["][name$="[quantity]"]').each(function () {
-                var sizeId = $(this).attr('name').match(/sizes\[(\d+)\]/)[1];
-                applySizeQuantityValidationRulesForElement($(this), sizeId);
+                // Validate sizes
+                let selectedSizes = $('input[name^="sizes"][name$="[selected]"]').filter(function() {
+                    return $(this).val() === '1';
+                }).length;
+                validator.element('#sizeInputsContainer');
             });
 
             $('#color_images_input').on('change', function() {
                 updateImageUploadButtonVisibility();
             });
-
         });
     </script>
 @endsection

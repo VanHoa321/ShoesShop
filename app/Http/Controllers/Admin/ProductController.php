@@ -42,24 +42,6 @@ class ProductController extends Controller
             'color_id' => 'required|exists:colors,id',
             'sizes' => 'required|array',
             'sizes.*.selected' => 'required|boolean',
-            'sizes.*.quantity' => [
-                'nullable',
-                function ($attribute, $value, $fail) use ($request) {
-                    $index = explode('.', $attribute)[1];
-                    $selected = $request->input("sizes.{$index}.selected");
-                    $quantity = $value;
-
-                    if ($selected == 1 || (!is_null($quantity) && $quantity > 0)) {
-                        if (is_null($quantity)) {
-                            $fail('Số lượng không được để trống khi kích thước được chọn hoặc có số lượng lớn hơn 0!');
-                        } elseif (!is_numeric($quantity)) {
-                            $fail('Số lượng phải là số!');
-                        } elseif ($quantity < 0) {
-                            $fail('Số lượng phải lớn hơn hoặc bằng 0!');
-                        }
-                    }
-                },
-            ],
             'color_images' => 'nullable|string',
         ];
 
@@ -87,7 +69,25 @@ class ProductController extends Controller
             'color_images.string' => 'Ảnh màu sắc phải là chuỗi hợp lệ!',
         ];
 
-        return Validator::make($request->all(), $rules, $messages);
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        $validator->after(function ($validator) use ($request) {
+            $sizes = $request->input('sizes', []);
+            $hasSelectedSize = false;
+
+            foreach ($sizes as $sizeData) {
+                if (isset($sizeData['selected']) && $sizeData['selected'] == 1) {
+                    $hasSelectedSize = true;
+                    break;
+                }
+            }
+
+            if (!$hasSelectedSize) {
+                $validator->errors()->add('sizes', 'Vui lòng chọn ít nhất một size!');
+            }
+        });
+
+        return $validator;
     }
 
     public function create()
@@ -151,7 +151,6 @@ class ProductController extends Controller
                         ProductSize::create([
                             'product_id' => $product->id,
                             'size_id' => $sizeId,
-                            'quantity' => $sizeData['quantity'] ?? 0,
                         ]);
                     }
                 }
@@ -181,7 +180,7 @@ class ProductController extends Controller
         $colors = Color::all();
         $sizes = Size::all();
 
-        $selectedSizes = ProductSize::where('product_id', $product->id)->pluck('quantity', 'size_id')->toArray();
+        $selectedSizes = ProductSize::where('product_id', $product->id)->pluck('size_id')->toArray();
         $colorImages = $product->images->pluck('image')->implode(',');
 
         return view('admin.product.edit', compact('product', 'brands', 'categories', 'colors', 'sizes', 'selectedSizes', 'colorImages'));
@@ -242,18 +241,34 @@ class ProductController extends Controller
 
             // Update sizes
             if ($request->has('sizes')) {
-                // Delete existing sizes
-                ProductSize::where('product_id', $product->id)->delete();
+                // Lấy danh sách size_id được chọn từ request
+                $selectedSizeIds = collect($request->sizes)
+                    ->filter(function ($sizeData) {
+                        return isset($sizeData['selected']) && $sizeData['selected'] == 1;
+                    })
+                    ->keys()
+                    ->toArray();
 
-                // Add new sizes
+                // Xóa các kích thước không được chọn (những size_id không có trong $selectedSizeIds)
+                ProductSize::where('product_id', $product->id)
+                    ->whereNotIn('size_id', $selectedSizeIds)
+                    ->delete();
+
+                // Thêm hoặc giữ nguyên các kích thước được chọn
                 foreach ($request->sizes as $sizeId => $sizeData) {
-                    if ((isset($sizeData['selected']) && $sizeData['selected'] == 1) || 
-                        (isset($sizeData['quantity']) && $sizeData['quantity'] > 0)) {
-                        ProductSize::create([
-                            'product_id' => $product->id,
-                            'size_id' => $sizeId,
-                            'quantity' => $sizeData['quantity'] ?? 0,
-                        ]);
+                    if (isset($sizeData['selected']) && $sizeData['selected'] == 1) {
+                        // Kiểm tra xem kích thước đã tồn tại chưa
+                        $exists = ProductSize::where('product_id', $product->id)
+                            ->where('size_id', $sizeId)
+                            ->exists();
+
+                        // Nếu chưa tồn tại, tạo mới
+                        if (!$exists) {
+                            ProductSize::create([
+                                'product_id' => $product->id,
+                                'size_id' => $sizeId,
+                            ]);
+                        }
                     }
                 }
             }

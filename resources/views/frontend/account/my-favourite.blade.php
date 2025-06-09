@@ -34,9 +34,6 @@
                             <li><a href="{{ route('frontend.profile') }}"><i class="far fa-user"></i> Hồ sơ của tôi</a></li>
                             <li><a href="{{ route('frontend.edit-password') }}"><i class="far fa-lock"></i> Đổi Mật Khẩu</a></li>
                             <li><a class="active" href="{{ route('frontend.my-favourite') }}"><i class="far fa-heart"></i> Danh sách yêu thích</a></li>
-                            <li><a href="{{ route('frontend.mydocument') }}"><i class="far fa-upload"></i> Danh sách tài liệu</a></li>
-                            <li><a href="{{ route('frontend.tran-history') }}"><i class="far fa-money-bill-transfer"></i> Lịch sử giao dịch</a></li>
-                            <li><a href="{{ route('frontend.point') }}"><i class="far fa-coins"></i> Nạp coin</a></li>
                             <li><a href="{{ route('logout') }}"><i class="far fa-sign-out"></i> Đăng xuất</a></li>
                         </ul>
                     </div>
@@ -50,61 +47,69 @@
                                     <h4 class="user-card-title">Danh sách tài liệu yêu thích</h4>
                                     <div class="row mt-20">
                                         @if ($favourites->count() > 0)
-                                            @foreach ($favourites as $item)
-                                                <div class="col-md-4 col-lg-3">
-                                                    <div class="product-item">
-                                                        <div class="product-img">
-                                                            @if ($item->document->is_free)
-                                                            <span class="type hot">Miễn phí</span>
-                                                            @elseif (!$item->document->is_new)
-                                                            <span class="type discount">Trả phí</span>
-                                                            @endif
-                                                            <a href="{{ route('frontend.document.details', $item->document->id) }}"><img src="{{ asset($item->document->cover_image) }}" alt="{{ $item->document->title }}"></a>
-                                                            <div class="product-action-wrap">
-                                                                <div class="product-action ms-3">
-                                                                    <a class="mb-2" href="{{ route('frontend.document.details', $item->document->id) }}" data-tooltip="tooltip" title="Xem chi tiết"><i class="far fa-eye"></i></a>
-                                                                    <a class="mb-2 remove-favourite" href="javascript:void(0);" data-id="{{ $item->document->id }}" data-tooltip="tooltip" title="Bỏ yêu thích">
-                                                                        <i class="far fa-heart-broken"></i>
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="product-content">
-                                                            <h3 class="product-title"><a href="{{ route('frontend.document.details', $item->document->id) }}">{{ $item->document->title }}</a></h3>
-                                                            <div class="product-bottom">
-                                                                <div class="product-price">
-                                                                    @if($item->document->price)
-                                                                        <span><i class="fa-solid fa-coins"></i> {{ number_format($item->document->price, 0, ',', '.') }} đ</span>
-                                                                    @else
-                                                                        <span><i class="fa-solid fa-hand-holding-heart"></i> Miễn phí</span>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                            <div class="product-bottom">
-                                                                <div class="product-price">
-                                                                    <span><i class="fa-solid fa-star"></i> 9.0/10.0 (10 đánh giá)</span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="product-bottom">
-                                                                <div class="product-price">
-                                                                    <span><i class="fa-solid fa-eye"></i> {{ $item->document->view_count }} lượt xem</span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="product-bottom">
-                                                                <div class="product-price">
-                                                                    <span><i class="fa-solid fa-download"></i> {{ $item->document->download_count }} lượt tải</span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-12">
-                                                                <input type="hidden" id="thumbnail" value="{{ old('avatar', auth()->user()->avatar) }}">
-                                                            </div>
+                                        @foreach ($favourites as $item)
+                                        <div class="col-md-6 col-lg-4">
+                                            <div class="product-item">
+                                                <div class="product-img">
+                                                    @if($item->product->is_sale)
+                                                    <span class="type hot">Giảm giá</span>
+                                                    @endif
+                                                    <a href="{{ route("frontend.product.details", $item->product->id) }}"><img src="{{ $item->product->thumbnail }}" alt=""></a>
+                                                    <div class="product-action-wrap">
+                                                        <div class="product-action ms-3">
+                                                            <a class="mb-2" href="{{ route("frontend.product.details", $item->product->id) }}" data-tooltip="tooltip" title="Xem chi tiết"><i class="far fa-eye"></i></a>
+                                                            <a class="mb-2 remove-favourite" href="javascript:void(0);" data-id="{{ $item->product->id }}" data-tooltip="tooltip" title="Bỏ yêu thích">
+                                                                <i class="far fa-heart-broken"></i>
+                                                            </a>
                                                         </div>
                                                     </div>
-                                                </div>  
-                                            @endforeach  
+                                                </div>
+                                                <div class="product-content">
+                                                    <h3 class="product-title"><a href="{{ route('frontend.product.details', $item->product->id) }}">{{ $item->product->name }}</a></h3>
+                                                    <div class="product-bottom">
+                                                        <div class="product-price">
+                                                            @if($item->product->discount > 0)
+                                                            <del>{{ number_format($item->product->price, 0, ',', '.') }} <sup>đ</sup></del>
+                                                            @endif
+                                                            <span>{{ number_format($item->product->price - $item->product->discount, 0, ',', '.') }} <sup>đ</sup></span>
+                                                        </div>
+                                                    </div>
+                                                    @if ($item->product->rating_count > 0)
+                                                    <div class="shop-single-rating">
+                                                        @php
+                                                        $integer_rating = floor($item->product->average_rating);
+                                                        @endphp
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            @if ($i <=$integer_rating)
+                                                            <i class="fas fa-star" style="color: #ffc107;"></i>
+                                                            @else
+                                                            <i class="far fa-star" style="color: #ffc107;"></i>
+                                                            @endif
+                                                            @endfor
+                                                    </div>
+                                                    @else
+                                                    <div class="product-rate">
+                                                        <i class="far fa-star"></i>
+                                                        <i class="far fa-star"></i>
+                                                        <i class="far fa-star"></i>
+                                                        <i class="far fa-star"></i>
+                                                        <i class="far fa-star"></i>
+                                                    </div>
+                                                    @endif
+
+                                                    <div class="col-md-12">
+                                                        <input type="hidden" id="thumbnail" value="{{ old('avatar', auth()->user()->avatar) }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                        <div class="pagination-area mb-0">
+                                            {{ $favourites->links('vendor.pagination.bootstrap-4') }}
+                                        </div>
                                         @else
-                                            <p>Chưa có tài liệu yêu thích!</p>   
-                                        @endif                                  
+                                        <p>Chưa có sản phẩm yêu thích!</p>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -126,12 +131,12 @@
 
         removeFavouriteButtons.forEach(button => {
             button.addEventListener('click', function() {
-                const documentId = this.getAttribute('data-id');
-                const url = `/account/favourite/${documentId}`;
-                
+                const productId = this.getAttribute('data-id');
+                const url = `/account/favourite/${productId}`;
+
                 Swal.fire({
                     title: 'Bạn có chắc chắn?',
-                    text: "Bạn muốn bỏ yêu thích tài liệu này?",
+                    text: "Bạn muốn bỏ yêu thích sản phẩm này?",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -155,7 +160,7 @@
                                         data.message,
                                         'success'
                                     ).then(() => {
-                                        location.reload();
+                                         window.location.href = "/account/my-favourite";
                                     });
                                 } else {
                                     Swal.fire(

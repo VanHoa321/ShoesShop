@@ -31,7 +31,7 @@ class VoucherController extends Controller
                 },
             ],
             'quantity' => 'required|integer|min:0',
-            'start_date' => 'required|date|after_or_equal:today',
+            'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'description' => 'nullable|string',
         ];
@@ -55,7 +55,6 @@ class VoucherController extends Controller
 
             'start_date.required' => 'Ngày bắt đầu không được để trống!',
             'start_date.date' => 'Ngày bắt đầu không hợp lệ!',
-            'start_date.after_or_equal' => 'Ngày bắt đầu phải lớn hơn hoặc bằng ngày hôm nay!',
 
             'end_date.required' => 'Ngày kết thúc không được để trống!',
             'end_date.date' => 'Ngày kết thúc không hợp lệ!',

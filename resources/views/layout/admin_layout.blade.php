@@ -119,6 +119,15 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{asset("assets/plugins/toastr/toastr.min.js")}}"></script>
     @yield('scriptss')
+    <script>
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: 'toast-bottom-right',
+            timeOut: 2000,
+            "extendedTimeOut": "1000"
+        };
+    </script>
     <script type="text/javascript">
         $(function() {
             $('#example-table').DataTable({

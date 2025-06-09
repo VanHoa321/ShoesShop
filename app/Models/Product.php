@@ -54,4 +54,14 @@ class Product extends Model
     {
         return $this->hasMany(ProductSize::class);
     }
+
+    public function ratings()
+    {
+        return $this->hasMany(ProductRating::class);
+    }
+    
+    public function favourites()
+    {
+        return $this->hasMany(Favourite::class, 'product_id');
+    }
 }

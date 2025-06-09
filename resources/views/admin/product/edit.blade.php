@@ -31,13 +31,13 @@
                             <div class="card-header">
                                 <h3 class="card-title">Điền các trường dữ liệu</h3>                               
                             </div>
-                            <form method="post" action="{{route("product.update" , $product->id)}}" id="quickForm">
+                            <form method="post" action="{{route('product.update', $product->id)}}" id="quickForm">
                                 @csrf
                                 <div class="card-body">                           
                                     <div class="row">
                                         <div class="col-md-3 d-flex justify-content-center align-items-center">
                                             <div class="form-group text-center mt-2">
-                                                <img id="holder" src="{{ old('thumbnail', $product->thumbnail)}}" style="width:230px; height:230px; object-fit:cover;" class="mx-auto d-block mb-4" />
+                                                <img id="holder" src="{{ old('thumbnail', $product->thumbnail) }}" style="width:230px; height:230px; object-fit:cover;" class="mx-auto d-block mb-4" />
                                                 <span class="input-group-btn mr-2">
                                                     <a id="lfm" data-input="thumbnail" data-preview="holder" class="btn btn-info">
                                                         <i class="fa-solid fa-image"></i> Chọn ảnh đại diện
@@ -51,13 +51,13 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label>Tên sản phẩm</label>
-                                                        <input type="text" name="name" class="form-control" placeholder="VD: Giày Thể Thao Helio Teen Nam Màu Trắng" value="{{old('name', $product->name)}}">
+                                                        <input type="text" name="name" class="form-control" placeholder="VD: Giày Thể Thao Helio Teen Nam Màu Trắng" value="{{ old('name', $product->name) }}">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label>Mã sản phẩm</label>
-                                                        <input type="text" name="code" class="form-control" placeholder="VD: BSB008100TRG" value="{{old('code', $product->code)}}">
+                                                        <input type="text" name="code" class="form-control" placeholder="VD: BSB008100TRG" value="{{ old('code', $product->code) }}">
                                                     </div>
                                                 </div>
                                             </div>                                                                         
@@ -81,7 +81,7 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label>Giảm giá</label>
-                                                        <input type="number" name="discount" class="form-control" placeholder="VD: 10000" value="{{old('discount', $product->discount)}}">
+                                                        <input type="number" name="discount" class="form-control" placeholder="VD: 10000" value="{{ old('discount', $product->discount) }}">
                                                         <em class="text-muted">Nếu không giảm giá, để trống hoặc nhập 0</em>
                                                     </div>
                                                 </div>
@@ -140,17 +140,16 @@
                                             </div>                                       
                                         </div>
                                     </div>
-                                            <div class="row">
+                                    <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label class="mb-2">Chọn size giày</label>
                                                 <div class="row" id="sizeInputsContainer">
                                                     @foreach($sizes as $size)
                                                         @php
-                                                            $isSizeSelected = isset($selectedSizes[$size->id]);
-                                                            $quantity = $isSizeSelected ? $selectedSizes[$size->id] : '';
+                                                            $isSizeSelected = in_array($size->id, old('sizes', $selectedSizes) ?: []);
                                                         @endphp
-                                                        <div class="col-md-3 col-sm-6 mb-3">
+                                                        <div class="col-md-2 col-sm-6 mb-3">
                                                             <div class="card">
                                                                 <div class="card-header">
                                                                     <button type="button" class="btn btn-outline-secondary w-100 size-toggle-btn {{ $isSizeSelected ? 'btn-info' : '' }}"
@@ -159,16 +158,7 @@
                                                                         <span class="selection-icon" style="display:{{ $isSizeSelected ? 'inline' : 'none' }}; margin-left: 5px;"><i class="fa fa-check-circle"></i></span>
                                                                     </button>
                                                                 </div>
-                                                                <div class="card-body size-details-fields" id="size_details_{{ $size->id }}" style="display:{{ $isSizeSelected ? 'block' : 'none' }};">
-                                                                    <div class="form-group">
-                                                                        <label class="mb-1">Số lượng</label>
-                                                                        <input type="number" name="sizes[{{ $size->id }}][quantity]" 
-                                                                            class="form-control" 
-                                                                            placeholder="VD: 100" 
-                                                                            value="{{ old('sizes.' . $size->id . '.quantity', $quantity) }}">
-                                                                    </div>
-                                                                    <input type="hidden" name="sizes[{{ $size->id }}][selected]" value="{{ $isSizeSelected ? '1' : '0' }}" class="size-selected-input">
-                                                                </div>
+                                                                <input type="hidden" name="sizes[{{ $size->id }}][selected]" value="{{ $isSizeSelected ? '1' : '0' }}" class="size-selected-input">
                                                             </div>
                                                         </div>
                                                     @endforeach
@@ -278,7 +268,10 @@
                     summary: {
                         required: true,
                         minlength: 10
-                    }                
+                    },
+                    'sizes[]': {
+                        required: true
+                    }
                 },
                 messages: {
                     name: {
@@ -306,6 +299,9 @@
                     summary: {
                         required: "Mô tả ngắn không được để trống!",
                         minlength: "Mô tả ngắn phải có ít nhất {0} ký tự!"
+                    },
+                    'sizes[]': {
+                        required: "Vui lòng chọn ít nhất một size!"
                     }
                 },
                 errorElement: 'span',
@@ -364,7 +360,6 @@
                     `);
                 },
                 matcher: function(params, data) {
-
                     if ($.trim(params.term) === '') {
                         return data;
                     }
@@ -448,55 +443,29 @@
             // Toggle size
             $('.size-toggle-btn').on('click', function () {
                 var sizeId = $(this).data('size-id');
-                var $details = $(`#size_details_${sizeId}`);
-                var $selectedInput = $details.find('.size-selected-input');
                 var $selectionIcon = $(this).find('.selection-icon');
-                var $quantityInput = $details.find('input[name$="[quantity]"]');
+                var $input = $(`input[name="sizes[${sizeId}][selected]"]`);
 
                 if ($(this).hasClass('btn-info')) {
                     $(this).removeClass('btn-info').addClass('btn-outline-secondary');
-                    $details.hide();
-                    $selectedInput.val('0');
                     $selectionIcon.hide();
-
-                    $quantityInput.removeAttr('name').val('');
-                    $selectedInput.removeAttr('name');
-                    validator.element($quantityInput);
+                    $input.val('0');
                 } else {
                     $(this).removeClass('btn-outline-secondary').addClass('btn-info');
-                    $details.show();
-                    $selectedInput.val('1');
                     $selectionIcon.show();
-
-                    $quantityInput.attr('name', `sizes[${sizeId}][quantity]`);
-                    $selectedInput.attr('name', `sizes[${sizeId}][selected]`);
-
-                    applySizeQuantityValidationRulesForElement($quantityInput, sizeId);
+                    $input.val('1');
                 }
+
+                // Validate sizes
+                let selectedSizes = $('input[name^="sizes"][name$="[selected]"]').filter(function() {
+                    return $(this).val() === '1';
+                }).length;
+                validator.element('#sizeInputsContainer');
             });
 
-            // Áp dụng rules validation theo từng size
-            function applySizeQuantityValidationRulesForElement(element, sizeId) {
-                var sizeName = $(`.size-toggle-btn[data-size-id="${sizeId}"]`).text().trim();
-
-                element.rules('remove');
-                element.rules('add', {
-                    required: true,
-                    min: 0,
-                    messages: {
-                        required: `Số lượng cho ${sizeName} không được để trống!`,
-                        min: `Số lượng cho ${sizeName} phải lớn hơn hoặc bằng 0!`
-                    }
-                });
-                validator.element(element);
-            }
-
-            // Áp dụng rule cho dữ liệu cũ
-            $('input[name^="sizes["][name$="[quantity]"]').each(function () {
-                var sizeId = $(this).attr('name').match(/sizes\[(\d+)\]/)[1];
-                applySizeQuantityValidationRulesForElement($(this), sizeId);
+            $('#color_images_input').on('change', function() {
+                updateImageUploadButtonVisibility();
             });
-
         });
     </script>
 @endsection

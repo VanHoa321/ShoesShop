@@ -61,7 +61,7 @@
                             <div class="price-range-box">
                                 <div class="price-range-input">
                                     <input type="number" name="min_price" value="{{ request('min_price', 0) }}" placeholder="Min" class="mb-2">
-                                    <input type="number" name="max_price" value="{{ request('max_price', 99999999) }}" placeholder="Max">
+                                    <input type="number" name="max_price" value="{{ request('max_price', 9999999) }}" placeholder="Max">
                                 </div>
                             </div>
                         </div>
@@ -91,66 +91,18 @@
                         <div class="shop-widget">
                             <h4 class="shop-widget-title">Đánh giá</h4>
                             <ul class="shop-checkbox-list rating">
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="rate1">
-                                        <label class="form-check-label" for="rate1">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                        </label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="rate2">
-                                        <label class="form-check-label" for="rate2">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fal fa-star"></i>
-                                        </label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="rate3">
-                                        <label class="form-check-label" for="rate3">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fal fa-star"></i>
-                                            <i class="fal fa-star"></i>
-                                        </label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="rate4">
-                                        <label class="form-check-label" for="rate4">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fal fa-star"></i>
-                                            <i class="fal fa-star"></i>
-                                            <i class="fal fa-star"></i>
-                                        </label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="rate5">
-                                        <label class="form-check-label" for="rate5">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fal fa-star"></i>
-                                            <i class="fal fa-star"></i>
-                                            <i class="fal fa-star"></i>
-                                            <i class="fal fa-star"></i>
-                                        </label>
-                                    </div>
-                                </li>
+                                @for ($i = 5; $i >= 1; $i--)
+                                    <li>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="rate{{ $i }}" name="ratings[]" value="{{ $i }}" @if(is_array(request('ratings')) && in_array($i, request('ratings'))) checked @endif>
+                                            <label class="form-check-label" for="rate{{ $i }}">
+                                                @for ($j = 1; $j <= 5; $j++)
+                                                    <i class="{{ $j <= $i ? 'fas' : 'far' }} fa-star"></i>
+                                                    @endfor
+                                            </label>
+                                        </div>
+                                    </li>
+                                @endfor
                             </ul>
                         </div>
                         <div class="shop-widget">
@@ -193,27 +145,48 @@
                             <div class="col-md-6 col-lg-4">
                                 <div class="product-item">
                                     <div class="product-img">
-                                        @if($product->is_sale)
+                                        @if($product->discount > 0)
                                             <span class="type hot">Giảm giá</span>
                                         @endif
                                         <a href="{{ route("frontend.product.details", $product->id) }}"><img src="{{ $product->thumbnail }}" alt=""></a>
                                         <div class="product-action-wrap">
                                             <div class="product-action">
-                                                <a href="{{ route("frontend.product.details", $product->id) }}" title="Chi tiết"><i class="far fa-eye"></i></a>
-                                                <a href="#" data-tooltip="tooltip" title="Add To Wishlist"><i class="far fa-heart"></i></a>
-                                                <a href="#" data-tooltip="tooltip" title="Add To Wishlist"><i class="far fa-heart"></i></a>
+                                                <a href="{{ route("frontend.product.details", $product->id) }}" data-tooltip="tooltip" title="Chi tiết"><i class="far fa-eye"></i></a>
+                                                <a href="#" data-tooltip="tooltip" title="{{ Auth::check() && $product->is_favourite ? 'Bỏ yêu thích' : 'Yêu thích' }}"
+                                                    class="favourite-btn {{ Auth::check() && $product->is_favourite ? 'favourited' : '' }}"
+                                                    data-product-id="{{ $product->id }}"
+                                                    data-is-favourited="{{ Auth::check() && $product->is_favourite ? 'true' : 'false' }}"
+                                                    @if (!Auth::check()) data-requires-login="true" @endif>
+                                                    <i class="far fa-heart"></i>
+                                                </a>
+                                                <a href="#" data-tooltip="tooltip" title="Thêm vào so sánh"><i class="far fa-arrows-repeat"></i></a>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="product-content">
                                         <h3 class="product-title"><a href="{{ route("frontend.product.details", $product->id) }}">{{ $product->name }}</a></h3>
-                                        <div class="product-rate">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                        </div>
+                                        @if ($product->count_rating > 0)
+                                            <div class="shop-single-rating">
+                                                @php
+                                                    $integer_rating = floor($product->average_rating);
+                                                @endphp
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <=$integer_rating)
+                                                        <i class="fas fa-star" style="color: #ffc107;"></i>
+                                                    @else
+                                                        <i class="far fa-star" style="color: #ffc107;"></i>
+                                                    @endif
+                                                @endfor
+                                            </div>
+                                            @else
+                                            <div class="shop-single-rating">
+                                                <i class="fas fa-star" style="color: #ffc107;"></i>
+                                                <i class="fas fa-star" style="color: #ffc107;"></i>
+                                                <i class="fas fa-star" style="color: #ffc107;"></i>
+                                                <i class="fas fa-star" style="color: #ffc107;"></i>
+                                                <i class="fas fa-star" style="color: #ffc107;"></i>
+                                            </div>
+                                        @endif
                                         <div class="product-bottom">
                                             <div class="product-price">
                                                 @if($product->discount > 0)
@@ -228,11 +201,9 @@
                         @endforeach
                     </div>
                 </div>
-                <!-- pagination -->
                 <div class="pagination-area mb-0">
                     {{ $products->links('vendor.pagination.bootstrap-4') }}
                 </div>
-                <!-- pagination end -->
             </div>
         </div>
     </div>

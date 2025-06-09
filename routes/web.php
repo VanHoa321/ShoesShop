@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ColorController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\admin\CustomerController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\SizeController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\FrontEnd\AccountController as FrontEndAccountController;
 use App\Http\Controllers\Frontend\CartController;
+use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\frontend\HomeController;
 use App\Http\Controllers\frontend\PostController as FrontendPostController;
@@ -196,6 +198,14 @@ Route::prefix('admin')->middleware("admin")->group(function () {
         Route::delete('/destroy/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
         Route::post('/change-status/{id}', [ProductController::class, 'changeStatus']);
     });
+
+    //Admin Order
+    Route::prefix('order')->group(function () {
+        Route::get('/pending', [OrderController::class, 'pendingOrders'])->name('order.pendingOrders');
+        Route::get('/details/{id}', [OrderController::class, 'details'])->name('order.details');
+        Route::post('/update-status/{id}', [OrderController::class, 'updateStatus']);
+        Route::post('/cancel/{id}', [OrderController::class, 'cancelOrder']);
+    });
 });
 
 //Frontend
@@ -210,6 +220,7 @@ Route::get('/posts/{id}', [FrontendPostController::class, 'show'])->name('fronte
 //Frontend Product
 Route::get('/product', [FrontendProductController::class, 'index'])->name('frontend.product.index');
 Route::get('/product/details/{id}', [FrontendProductController::class, 'details'])->name('frontend.product.details');
+Route::post('/product-rating', [FrontendProductController::class, 'storeRating'])->name('frontend.product.rating');
 
 //Frontend Cart
 Route::prefix('cart')->controller(CartController::class)->group(function () {
@@ -218,13 +229,24 @@ Route::prefix('cart')->controller(CartController::class)->group(function () {
     Route::post('/update', 'update')->name('frontend.cart.update');
     Route::post('/remove', 'remove')->name('frontend.cart.remove');
     Route::post('/clear', 'clear')->name('frontend.cart.clear');
+    Route::post('/apply-voucher', 'applyVoucher')->name('frontend.cart.applyVoucher');
+    Route::post('/remove-voucher', 'removeVoucher')->name('frontend.cart.removeVoucher');
 });
 
+//Frontend Checkout
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('frontend.checkout.index');
+Route::post('/checkout/store', [CheckoutController::class, 'store'])->name('frontend.checkout.store');
+Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('frontend.checkout.success');
 
+//Frontend Account
 Route::prefix('account')->middleware("auth")->group(function () {
     Route::get('/profile', [FrontEndAccountController::class, 'profile'])->name('frontend.profile');
     Route::get('/edit-profile', [FrontEndAccountController::class, 'editProfile'])->name('frontend.edit-profile');
     Route::post('/update-profile', [FrontEndAccountController::class, 'updateProfile'])->name('frontend.update-profile');
     Route::get('/change-password', [FrontEndAccountController::class, 'editPassword'])->name('frontend.edit-password');
     Route::post('/update-password', [FrontEndAccountController::class, 'updatePassword'])->name('frontend.update-password');
+    Route::post('/toggle-favourite', [ProductController::class, 'toggleFavourite'])->name('frontend.product.favourite');
+    Route::get('/my-favourite', [FrontEndAccountController::class, 'myFavourite'])->name('frontend.my-favourite');
+    Route::post('/favourite/{id}', [FrontEndAccountController::class, 'addFavourite'])->name('frontend.add-favourite');
+    Route::delete('/favourite/{id}', [FrontEndAccountController::class, 'removeFavourite'])->name('frontend.remove-favourite');
 });

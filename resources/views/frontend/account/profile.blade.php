@@ -36,6 +36,8 @@
                             </div>
                             <ul class="sidebar-list">
                                 <li><a class="active" href="{{ route('frontend.profile') }}"><i class="far fa-user"></i> Hồ sơ cá nhân</a></li>
+                                <li><a href="{{ route('frontend.edit-password') }}"><i class="far fa-lock"></i> Đổi Mật Khẩu</a></li>
+                                <li><a href="{{ route('frontend.my-favourite') }}"><i class="far fa-heart"></i> Danh sách yêu thích</a></li>
                                 <li><a href="{{ route('logout') }}"><i class="far fa-sign-out"></i> Đăng xuất</a></li>
                             </ul>
                         </div>
@@ -47,7 +49,7 @@
                                     <div class="user-card">
                                         <h4 class="user-card-title">Thông tin cá nhân</h4>
                                         <div class="user-form">
-                                            <form action="{{ route('frontend.update-profile') }}" method="POST" enctype="multipart/form-data">
+                                            <form id="quickForm" action="{{ route('frontend.update-profile') }}" method="POST" enctype="multipart/form-data">
                                                 @csrf
                                                 <div class="row">
                                                     <div class="col-md-6">
@@ -112,17 +114,77 @@
         </div>
     </main>
 @endsection
+@section('scripts')
+    <script src="{{ asset('assets/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/jquery-validation/additional-methods.min.js') }}"></script>
 
-@section('script')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            setTimeout(function () {
-                let alert = document.getElementById('session-alert');
-                if (alert) {
-                    let bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
-                    bsAlert.close();
+        $(function () {
+            $('#quickForm').validate({
+                rules: {
+                    name: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 50
+                    },
+                    email: {
+                        required: true,
+                        email: true,
+                        maxlength: 100
+                    },
+                    phone: {
+                        required: true,
+                        pattern: /^0[0-9]{9}$/,
+                        maxlength: 10
+                    },
+                    address: {
+                        maxlength: 255
+                    },
+                    description: {
+                        maxlength: 65535
+                    },
+                    avatar: {
+                        maxlength: 255
+                    }
+                },
+                messages: {
+                    name: {
+                        required: "Họ tên không được để trống!",
+                        minlength: "Họ tên phải có ít nhất {0} ký tự!",
+                        maxlength: "Họ tên tối đa {0} ký tự!"
+                    },
+                    email: {
+                        required: "Email không được để trống!",
+                        email: "Email không hợp lệ!",
+                        maxlength: "Email tối đa {0} ký tự!"
+                    },
+                    phone: {
+                        required: "Số điện thoại không được để trống!",
+                        pattern: "Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0!",
+                        maxlength: "Số điện thoại tối đa {0} ký tự!"
+                    },
+                    address: {
+                        maxlength: "Địa chỉ tối đa {0} ký tự!"
+                    },
+                    description: {
+                        maxlength: "Mô tả tối đa {0} ký tự!"
+                    },
+                    avatar: {
+                        maxlength: "Đường dẫn ảnh tối đa {0} ký tự!"
+                    }
+                },
+                errorElement: 'span',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
                 }
-            }, 5000);
+            });
         });
     </script>
 @endsection
